@@ -1,8 +1,3 @@
-/**
- * Componente de Cadastro
- * Permite que novos usuários se registrem na aplicação
- */
-
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';

@@ -1,8 +1,3 @@
-/**
- * Componente de Login
- * Permite que o usuário faça login na aplicação
- */
-
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';

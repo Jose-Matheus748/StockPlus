@@ -1,7 +1,3 @@
-/**
- * Componente de Estoque
- * Página principal que exibe tabela de produtos e cards de resumo
- */
 
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -9,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { LayoutComponent } from '../../components/layout/layout.component';
 import { ProdutoService } from '../../services/produto.service';
 import { Produto } from '../../models';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-estoque',
@@ -30,6 +27,7 @@ export class EstoqueComponent implements OnInit {
     marca: '',
     quantidade: 0,
     precoUnitario: 0,
+    estoqueId: 0
   };
 
   // Resumo do estoque
@@ -38,11 +36,14 @@ export class EstoqueComponent implements OnInit {
   totalProdutos: number = 0;
   precoMedioUnitario: number = 0;
 
-  constructor(private produtoService: ProdutoService) {}
+  constructor(private produtoService: ProdutoService, private route: ActivatedRoute) {}
+
+  estoqueId!: number;
 
   ngOnInit(): void {
-    this.carregarProdutos();
-  }
+  this.estoqueId = Number(this.route.snapshot.paramMap.get('id'));
+  this.carregarProdutos();
+}
 
   /**
    * Carrega todos os produtos do backend
@@ -93,6 +94,7 @@ export class EstoqueComponent implements OnInit {
       marca: '',
       quantidade: 0,
       precoUnitario: 0,
+      estoqueId: this.estoqueId
     };
     this.showFormModal = true;
   }
@@ -103,6 +105,7 @@ export class EstoqueComponent implements OnInit {
   editarProduto(produto: Produto): void {
     this.isEditMode = true;
     this.formData = { ...produto };
+    this.formData.estoqueId = this.estoqueId;
     this.showFormModal = true;
   }
 
