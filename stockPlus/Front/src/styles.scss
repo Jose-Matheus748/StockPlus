@@ -1,0 +1,143 @@
+/**
+ * Estilos Globais da Aplicação
+ * Design minimalista com cores claras (bege, amarelo claro, branco)
+ */
+
+@use 'bootstrap/scss/bootstrap';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f9f7f4;
+  color: #2c2c2c;
+}
+
+/* Paleta de Cores */
+:root {
+  --primary-color: #d4a574;
+  --primary-dark: #c99a5f;
+  --primary-light: #e8c9a0;
+  --secondary-color: #f9f7f4;
+  --accent-color: #fef9f3;
+  --text-primary: #2c2c2c;
+  --text-secondary: #8b7d6b;
+  --border-color: #e0d5c7;
+  --error-color: #c33;
+  --success-color: #3c3;
+}
+
+/* Tipografia */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+p {
+  color: var(--text-secondary);
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: var(--primary-dark);
+  }
+}
+
+/* Componentes Bootstrap Customizados */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 165, 116, 0.3);
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #b88a4f 100%);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.form-control {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: 'Poppins', sans-serif;
+  background-color: #fefdfb;
+  transition: all 0.3s ease;
+
+  &:focus {
+    border-color: var(--primary-color);
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.1);
+    outline: none;
+  }
+}
+
+.alert {
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+}
+
+.alert-danger {
+  background-color: #fee;
+  color: var(--error-color);
+}
+
+.alert-success {
+  background-color: #efe;
+  color: var(--success-color);
+}
+
+/* Scrollbar Customizado */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+
+  &:hover {
+    background: var(--primary-dark);
+  }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+}

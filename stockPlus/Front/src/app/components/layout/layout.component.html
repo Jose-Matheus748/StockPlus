@@ -1,0 +1,68 @@
+<div class="layout">
+  <!-- Sidebar -->
+  <aside [ngClass]="{ 'sidebar': true, 'open': sidebarOpen, 'closed': !sidebarOpen }">
+    <div class="sidebar-header">
+      <h2 class="sidebar-title">Estoque</h2>
+      <button
+        class="sidebar-toggle"
+        (click)="toggleSidebar()"
+        aria-label="Toggle sidebar"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/estoque" class="nav-item" routerLinkActive="active">
+        <i class="icon">📦</i>
+        <span>Meu Estoque</span>
+      </a>
+      <a href="#" class="nav-item">
+        <i class="icon">🏷️</i>
+        <span>Produtos</span>
+      </a>
+      <a href="#" class="nav-item">
+        <i class="icon">📊</i>
+        <span>Relatórios</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">{{ getNomeInicial() }}</div>
+        <div class="user-details">
+          <p class="user-name">{{ usuario?.nome }}</p>
+          <p class="user-email">{{ usuario?.email }}</p>
+        </div>
+      </div>
+      <button (click)="handleLogout()" class="btn-logout">
+        Sair
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button
+          class="menu-toggle"
+          (click)="toggleSidebar()"
+          aria-label="Toggle menu"
+        >
+          ☰
+        </button>
+        <h1 class="page-title">Sistema de Estoque</h1>
+      </div>
+      <div class="top-bar-right">
+        <span class="user-greeting">Bem-vindo, {{ usuario?.nome }}!</span>
+      </div>
+    </header>
+
+    <div class="content-wrapper">
+      <ng-content></ng-content>
+    </div>
+  </main>
+</div>

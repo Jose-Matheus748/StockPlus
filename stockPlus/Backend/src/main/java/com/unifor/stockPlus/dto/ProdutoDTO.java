@@ -1,4 +1,5 @@
 package com.unifor.stockPlus.dto;
+
 import com.unifor.stockPlus.entity.Estoque;
 import com.unifor.stockPlus.entity.Produto;
 import lombok.*;
@@ -10,11 +11,12 @@ public class ProdutoDTO {
     private Long id;
     private String nome;
     private String descricao;
+    private String fornecedor;
+    private String marca;
     private Integer quantidade;
     private Double precoUnitario;
     private Long estoqueId;
 
-    // -------- Entity -> DTO --------
     public static ProdutoDTO fromEntity(Produto produto) {
         if (produto == null) return null;
 
@@ -22,9 +24,11 @@ public class ProdutoDTO {
         dto.setId(produto.getId());
         dto.setNome(produto.getNome());
         dto.setDescricao(produto.getDescricao());
+        dto.setFornecedor(produto.getFornecedor());
+        dto.setMarca(produto.getMarca());
         dto.setQuantidade(produto.getQuantidade());
         dto.setPrecoUnitario(produto.getPrecoUnitario());
-        
+
         if (produto.getEstoque() != null) {
             dto.setEstoqueId(produto.getEstoque().getId());
         }
@@ -32,12 +36,13 @@ public class ProdutoDTO {
         return dto;
     }
 
-    // -------- DTO -> Entity --------
     public Produto toEntity(Estoque estoque) {
         Produto produto = new Produto();
         produto.setId(this.id);
         produto.setNome(this.nome);
         produto.setDescricao(this.descricao);
+        produto.setFornecedor(this.fornecedor);
+        produto.setMarca(this.marca);
         produto.setQuantidade(this.quantidade);
         produto.setPrecoUnitario(this.precoUnitario);
         produto.setEstoque(estoque);

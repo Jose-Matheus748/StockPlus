@@ -64,6 +64,8 @@ public class ProdutoService {
 
         produto.setNome(dto.getNome());
         produto.setDescricao(dto.getDescricao());
+        produto.setFornecedor(dto.getFornecedor()); // NOVO
+        produto.setMarca(dto.getMarca()); // NOVO
         produto.setQuantidade(dto.getQuantidade());
         produto.setPrecoUnitario(dto.getPrecoUnitario());
         produto.setEstoque(estoque);

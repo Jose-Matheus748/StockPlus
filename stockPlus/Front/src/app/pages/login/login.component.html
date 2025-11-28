@@ -1,0 +1,52 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>Estoque Clínica</h1>
+      <p>Sistema de Gerenciamento de Estoque</p>
+    </div>
+
+    <form (ngSubmit)="handleSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          class="form-control"
+          placeholder="seu@email.com"
+          [(ngModel)]="email"
+          name="email"
+          [disabled]="isLoading"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input
+          type="password"
+          id="senha"
+          class="form-control"
+          placeholder="Sua senha"
+          [(ngModel)]="senha"
+          name="senha"
+          [disabled]="isLoading"
+        />
+      </div>
+
+      <div *ngIf="erro" class="alert alert-danger">{{ erro }}</div>
+
+      <button
+        type="submit"
+        class="btn btn-primary w-100"
+        [disabled]="isLoading"
+      >
+        {{ isLoading ? 'Entrando...' : 'Entrar' }}
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p>
+        Não tem conta? <a routerLink="/cadastro">Cadastre-se aqui</a>
+      </p>
+    </div>
+  </div>
+</div>

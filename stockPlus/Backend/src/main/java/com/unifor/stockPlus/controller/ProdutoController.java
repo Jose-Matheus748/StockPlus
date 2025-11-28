@@ -30,6 +30,11 @@ public class ProdutoController {
         return produtoService.getById(id);
     }
 
+    @GetMapping("/estoque/{estoqueId}")
+    public List<ProdutoDTO> getByEstoque(@PathVariable Long estoqueId) {
+        return produtoService.getByEstoque(estoqueId);
+    }
+
     @PutMapping("/{id}")
     public ProdutoDTO update(@PathVariable Long id, @RequestBody ProdutoDTO dto) {
         return produtoService.update(id, dto);
