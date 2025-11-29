@@ -55,11 +55,12 @@ export class EstoqueService {
   // ------------------------------------------------------------
   // Deletar estoque
   // ------------------------------------------------------------
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(
-      `${API_CONFIG.baseURL}${API_ENDPOINTS.estoques.delete(id)}`
-    );
-  }
+  delete(id: number, usuarioId: number): Observable<void> {
+  return this.http.delete<void>(
+    `${API_CONFIG.baseURL}${API_ENDPOINTS.estoques.delete(id)}?usuarioId=${usuarioId}`
+  );
+}
+
 
   // ------------------------------------------------------------
   // Listar produtos de um estoque

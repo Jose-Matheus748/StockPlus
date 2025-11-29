@@ -128,18 +128,27 @@ export class EstoquesComponent implements OnInit {
    * Deleta um estoque
    */
   deletarEstoque(estoque: Estoque): void {
-    if (!estoque.id) return;
+  if (!estoque.id) return;
 
-    if (confirm(`Tem certeza que deseja deletar o estoque "${estoque.nome}"? Todos os produtos serão removidos.`)) {
-      this.estoqueService.delete(estoque.id).subscribe({
-        next: () => {
-          this.carregarEstoques();
-          alert('Estoque deletado com sucesso!');
-        },
-        error: (error) => {
-          alert('Erro ao deletar estoque: ' + error.error?.message);
-        },
-      });
+  if (confirm(`Tem certeza que deseja deletar o estoque "${estoque.nome}"? Todos os produtos serão removidos.`)) {
+
+    const usuario = this.authService.getCurrentUser();
+    if (!usuario || !usuario.id) {
+      alert('Usuário não autenticado.');
+      return;
     }
+
+    this.estoqueService.delete(estoque.id, usuario.id).subscribe({
+      next: () => {
+        this.carregarEstoques();
+        alert('Estoque deletado com sucesso!');
+      },
+      error: (error) => {
+        console.error('Erro ao deletar:', error);
+        alert('Erro ao deletar estoque: ' + (error.error?.message || 'Erro desconhecido'));
+      },
+    });
   }
+}
+
 }
