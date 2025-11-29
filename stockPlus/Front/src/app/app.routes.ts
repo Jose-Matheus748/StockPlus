@@ -5,13 +5,14 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { CadastroComponent } from './pages/cadastro/cadastro.component';
+import { EstoquesComponent } from './pages/estoques/estoques.component';
 import { EstoqueComponent } from './pages/estoque/estoque.component';
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/estoque',
+    redirectTo: '/estoques',
     pathMatch: 'full',
   },
   {
@@ -23,12 +24,17 @@ export const routes: Routes = [
     component: CadastroComponent,
   },
   {
-    path: 'estoque',
+    path: 'estoques',
+    component: EstoquesComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'estoque/:id',
     component: EstoqueComponent,
     canActivate: [AuthGuard],
   },
   {
     path: '**',
-    redirectTo: '/estoque',
+    redirectTo: '/estoques',
   },
 ];

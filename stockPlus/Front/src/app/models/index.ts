@@ -25,6 +25,7 @@ export interface Estoque {
   id?: number;
   nome: string;
   descricao?: string;
+  usuarioId?: number; // ADICIONAR
   produtos?: Produto[];
 }
 

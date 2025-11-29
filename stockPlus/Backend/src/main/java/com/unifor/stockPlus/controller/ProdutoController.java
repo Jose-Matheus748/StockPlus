@@ -2,6 +2,7 @@ package com.unifor.stockPlus.controller;
 
 import com.unifor.stockPlus.dto.ProdutoDTO;
 import com.unifor.stockPlus.service.ProdutoService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -30,11 +31,6 @@ public class ProdutoController {
         return produtoService.getById(id);
     }
 
-    @GetMapping("/estoque/{estoqueId}")
-    public List<ProdutoDTO> getByEstoque(@PathVariable Long estoqueId) {
-        return produtoService.getByEstoque(estoqueId);
-    }
-
     @PutMapping("/{id}")
     public ProdutoDTO update(@PathVariable Long id, @RequestBody ProdutoDTO dto) {
         return produtoService.update(id, dto);
@@ -58,5 +54,11 @@ public class ProdutoController {
     @GetMapping("/valor-total")
     public Double getValorTotalEstoque() {
         return produtoService.calcularValorTotalEstoque();
+    }
+
+    @GetMapping("/estoque/{estoqueId}")
+    public ResponseEntity<List<ProdutoDTO>> listarPorEstoque(@PathVariable Long estoqueId) {
+        List<ProdutoDTO> produtos = produtoService.listarPorEstoque(estoqueId);
+        return ResponseEntity.ok(produtos);
     }
 }

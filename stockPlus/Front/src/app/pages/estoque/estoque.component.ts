@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { LayoutComponent } from '../../components/layout/layout.component';
 import { ProdutoService } from '../../services/produto.service';
 import { Produto } from '../../models';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-estoque',
@@ -36,23 +36,32 @@ export class EstoqueComponent implements OnInit {
   totalProdutos: number = 0;
   precoMedioUnitario: number = 0;
 
-  constructor(private produtoService: ProdutoService, private route: ActivatedRoute) {}
+  constructor(
+    private produtoService: ProdutoService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   estoqueId!: number;
 
   ngOnInit(): void {
-  this.estoqueId = Number(this.route.snapshot.paramMap.get('id'));
-  this.carregarProdutos();
-}
+    this.estoqueId = Number(this.route.snapshot.paramMap.get('id'));
+    if (!this.estoqueId) {
+      this.router.navigate(['/estoques']);
+      return;
+    }
+    this.carregarProdutos();
+  }
 
   /**
-   * Carrega todos os produtos do backend
+   * Carrega todos os produtos do estoque específico
    */
   carregarProdutos(): void {
     this.isLoading = true;
     this.erro = '';
 
-    this.produtoService.getAll().subscribe({
+    // Filtrar produtos por estoque
+    this.produtoService.listarPorEstoque(this.estoqueId).subscribe({
       next: (data) => {
         this.produtos = data;
         this.calcularResumo();
@@ -210,5 +219,12 @@ export class EstoqueComponent implements OnInit {
    */
   calcularValorTotal(produto: Produto): number {
     return produto.quantidade * produto.precoUnitario;
+  }
+
+  /**
+   * Volta para a tela de estoques
+   */
+  voltarEstoques(): void {
+    this.router.navigate(['/estoques']);
   }
 }

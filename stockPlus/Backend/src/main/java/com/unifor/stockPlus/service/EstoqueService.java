@@ -5,6 +5,7 @@ import com.unifor.stockPlus.dto.ProdutoDTO;
 import com.unifor.stockPlus.dto.ValorTotalEstoqueDTO;
 import com.unifor.stockPlus.entity.Estoque;
 import com.unifor.stockPlus.entity.Produto;
+import com.unifor.stockPlus.entity.Usuario;
 import com.unifor.stockPlus.exceptions.ResourceNotFoundException;
 import com.unifor.stockPlus.repository.EstoqueRepository;
 import com.unifor.stockPlus.repository.ProdutoRepository;
@@ -17,16 +18,21 @@ public class EstoqueService {
     private final EstoqueRepository estoqueRepository;
     private final ProdutoRepository produtoRepository;
 
-    public EstoqueService(EstoqueRepository estoqueRepo, ProdutoRepository produtoRepo) {
-        this.estoqueRepository = estoqueRepo;
-        this.produtoRepository = produtoRepo;
+    public EstoqueService(EstoqueRepository estoqueRepository, ProdutoRepository produtoRepository) {
+        this.estoqueRepository = estoqueRepository;
+        this.produtoRepository = produtoRepository;
     }
 
-    public EstoqueDTO create(EstoqueDTO dto) {
-        Estoque estoque = dto.toEntity();
+    public EstoqueDTO create(EstoqueDTO dto, Usuario usuario) {
+        Estoque estoque = new Estoque();
+        estoque.setNome(dto.getNome());
+        estoque.setDescricao(dto.getDescricao());
+        estoque.setUsuario(usuario);
+
         estoqueRepository.save(estoque);
         return EstoqueDTO.fromEntity(estoque);
     }
+
 
     public EstoqueDTO getById(Long id) {
         Estoque estoque = estoqueRepository.findById(id)
@@ -39,25 +45,6 @@ public class EstoqueService {
         return estoqueRepository.findAll().stream()
                 .map(EstoqueDTO::fromEntity)
                 .toList();
-    }
-
-    public EstoqueDTO update(Long id, EstoqueDTO dto) {
-        Estoque estoque = estoqueRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Estoque não encontrado"));
-
-        estoque.setNome(dto.getNome());
-        estoque.setDescricao(dto.getDescricao());
-
-        estoqueRepository.save(estoque);
-
-        return EstoqueDTO.fromEntity(estoque);
-    }
-
-    public void delete(Long id) {
-        if (!estoqueRepository.existsById(id))
-            throw new ResourceNotFoundException("Estoque não encontrado");
-
-        estoqueRepository.deleteById(id);
     }
 
     public ValorTotalEstoqueDTO calcularValorTotal(Long estoqueId) {
@@ -73,20 +60,64 @@ public class EstoqueService {
                 .sum();
 
         int quantidadeTotal = estoque.getProdutos().stream()
-                .mapToInt(p -> p.getQuantidade())
+                .mapToInt(Produto::getQuantidade)
                 .sum();
 
         return new ValorTotalEstoqueDTO(valorTotal, quantidadeTotal);
     }
 
     public List<ProdutoDTO> listarProdutosDoEstoque(Long estoqueId) {
-        Estoque estoque = estoqueRepository.findById(estoqueId)
+        estoqueRepository.findById(estoqueId)
                 .orElseThrow(() -> new ResourceNotFoundException("Estoque não encontrado"));
 
-        List<Produto> produtos = produtoRepository.findByEstoqueId(estoqueId);
-
-        return produtos.stream()
+        return produtoRepository.findByEstoqueId(estoqueId)
+                .stream()
                 .map(ProdutoDTO::fromEntity)
                 .toList();
+    }
+
+    public EstoqueDTO criarEstoquePadrao(Usuario usuario) {
+        Estoque estoque = new Estoque();
+        estoque.setNome("Estoque Padrão");
+        estoque.setDescricao("Estoque padrão criado automaticamente");
+        estoque.setUsuario(usuario);
+
+        Estoque saved = estoqueRepository.save(estoque);
+        return EstoqueDTO.fromEntity(saved);
+    }
+
+    public List<EstoqueDTO> listarPorUsuario(Long usuarioId) {
+        return estoqueRepository.findByUsuarioId(usuarioId)
+                .stream()
+                .map(EstoqueDTO::fromEntity)
+                .toList();
+    }
+
+    public boolean pertenceAoUsuario(Long estoqueId, Long usuarioId) {
+        return estoqueRepository.existsByIdAndUsuarioId(estoqueId, usuarioId);
+    }
+
+    public EstoqueDTO update(Long id, EstoqueDTO dto, Usuario usuarioAutenticado) {
+        if (!pertenceAoUsuario(id, usuarioAutenticado.getId())) {
+            throw new ResourceNotFoundException("Estoque não encontrado ou não pertence ao usuário");
+        }
+
+        Estoque estoque = estoqueRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Estoque não encontrado"));
+
+        estoque.setNome(dto.getNome());
+        estoque.setDescricao(dto.getDescricao());
+
+        Estoque atualizado = estoqueRepository.save(estoque);
+
+        return EstoqueDTO.fromEntity(atualizado);
+    }
+
+    public void delete(Long id, Usuario usuarioAutenticado) {
+        if (!pertenceAoUsuario(id, usuarioAutenticado.getId())) {
+            throw new ResourceNotFoundException("Estoque não encontrado ou não pertence ao usuário");
+        }
+
+        estoqueRepository.deleteById(id);
     }
 }

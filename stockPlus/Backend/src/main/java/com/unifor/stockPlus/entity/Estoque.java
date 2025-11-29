@@ -17,6 +17,10 @@ public class Estoque {
     private String nome;       // Ex: "Estoque Principal"
     private String descricao;  // opcional
 
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
+
     @OneToMany(mappedBy = "estoque", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Produto> produtos;
 }

@@ -117,5 +117,10 @@ public class ProdutoService {
                 .sum();
     }
 
-
+    public List<ProdutoDTO> listarPorEstoque(Long estoqueId) {
+        List<Produto> produtos = produtoRepository.findByEstoqueId(estoqueId);
+        return produtos.stream()
+                .map(ProdutoDTO::fromEntity)
+                .toList();
+    }
 }

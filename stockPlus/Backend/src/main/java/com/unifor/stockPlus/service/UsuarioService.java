@@ -2,7 +2,6 @@ package com.unifor.stockPlus.service;
 
 import com.unifor.stockPlus.dto.UsuarioDTO;
 import com.unifor.stockPlus.entity.Usuario;
-import com.unifor.stockPlus.exceptions.BadRequestException;
 import com.unifor.stockPlus.exceptions.ResourceNotFoundException;
 import com.unifor.stockPlus.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
@@ -11,43 +10,29 @@ import java.util.List;
 @Service
 public class UsuarioService {
 
-    private final UsuarioRepository usuarioRepo;
+    private final UsuarioRepository usuarioRepository;
+    private final EstoqueService estoqueService;
 
-    public UsuarioService(UsuarioRepository usuarioRepo) {
-        this.usuarioRepo = usuarioRepo;
-    }
-
-    public UsuarioDTO create(UsuarioDTO dto) {
-        if (usuarioRepo.existsByEmail(dto.getEmail())) {
-            throw new BadRequestException("Email já cadastrado");
-        }
-
-        if (usuarioRepo.existsByCpfOuCnpj(dto.getCpfOuCnpj())) {
-            throw new BadRequestException("CPF/CNPJ já cadastrado");
-        }
-
-        Usuario usuario = dto.toEntity();
-        usuarioRepo.save(usuario);
-
-        return UsuarioDTO.fromEntity(usuario);
+    public UsuarioService(UsuarioRepository usuarioRepository, EstoqueService estoqueService) {
+        this.usuarioRepository = usuarioRepository;
+        this.estoqueService = estoqueService;
     }
 
     public UsuarioDTO getById(Long id) {
-        Usuario usuario = usuarioRepo.findById(id)
+        Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
-
         return UsuarioDTO.fromEntity(usuario);
     }
 
     public List<UsuarioDTO> getAll() {
-        return usuarioRepo.findAll()
+        return usuarioRepository.findAll()
                 .stream()
                 .map(UsuarioDTO::fromEntity)
                 .toList();
     }
 
     public UsuarioDTO update(Long id, UsuarioDTO dto) {
-        Usuario usuario = usuarioRepo.findById(id)
+        Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         usuario.setNome(dto.getNome());
@@ -55,27 +40,43 @@ public class UsuarioService {
         usuario.setCpfOuCnpj(dto.getCpfOuCnpj());
         usuario.setTipo(dto.getTipo());
 
-        usuarioRepo.save(usuario);
+        usuarioRepository.save(usuario);
 
         return UsuarioDTO.fromEntity(usuario);
     }
 
     public void delete(Long id) {
-        if (!usuarioRepo.existsById(id))
+        if (!usuarioRepository.existsById(id))
             throw new ResourceNotFoundException("Usuário não encontrado");
 
-        usuarioRepo.deleteById(id);
+        usuarioRepository.deleteById(id);
     }
 
     public UsuarioDTO login(String email, String senha) {
-        var usuario = usuarioRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         if (!usuario.getSenha().equals(senha)) {
             throw new RuntimeException("Senha incorreta");
         }
 
         return UsuarioDTO.fromEntity(usuario);
+    }
+
+    public UsuarioDTO create(UsuarioDTO usuarioDTO) {
+        Usuario usuario = usuarioDTO.toEntity();
+
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+        // Criar estoque padrão após salvar usuário
+        estoqueService.criarEstoquePadrao(usuarioSalvo);
+
+        return UsuarioDTO.fromEntity(usuarioSalvo);
+    }
+
+    public Usuario getEntityById(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     }
 
 }

@@ -31,6 +31,9 @@ export const API_ENDPOINTS = {
     delete: (id: number) => `/estoques/${id}`,
     listarProdutos: (id: number) => `/estoques/${id}/produtos`,
     calcularValorTotal: (id: number) => `/estoques/${id}/valor-total`,
+
+    // 🔥 ROTA QUE FALTAVA para listar apenas os estoques do usuário autenticado
+    meusEstoques: '/estoques/meus-estoques',
   },
 
   // Produtos

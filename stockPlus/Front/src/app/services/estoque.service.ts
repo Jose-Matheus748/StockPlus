@@ -15,37 +15,36 @@ import { Estoque, Produto, ValorTotalEstoque } from '../models';
 export class EstoqueService {
   constructor(private http: HttpClient) {}
 
-  /**
-   * Cria um novo estoque
-   */
+  // ------------------------------------------------------------
+  // Criar estoque
+  // ------------------------------------------------------------
   create(estoque: Estoque): Observable<Estoque> {
     return this.http.post<Estoque>(
       `${API_CONFIG.baseURL}${API_ENDPOINTS.estoques.create}`,
       estoque
     );
   }
-
-  /**
-   * Obtém todos os estoques
-   */
+  // ------------------------------------------------------------
+  // Listar todos os estoques
+  // ------------------------------------------------------------
   getAll(): Observable<Estoque[]> {
     return this.http.get<Estoque[]>(
       `${API_CONFIG.baseURL}${API_ENDPOINTS.estoques.getAll}`
     );
   }
 
-  /**
-   * Obtém um estoque por ID
-   */
+  // ------------------------------------------------------------
+  // Buscar estoque por ID
+  // ------------------------------------------------------------
   getById(id: number): Observable<Estoque> {
     return this.http.get<Estoque>(
       `${API_CONFIG.baseURL}${API_ENDPOINTS.estoques.getById(id)}`
     );
   }
 
-  /**
-   * Atualiza um estoque
-   */
+  // ------------------------------------------------------------
+  // Atualizar estoque
+  // ------------------------------------------------------------
   update(id: number, estoque: Estoque): Observable<Estoque> {
     return this.http.put<Estoque>(
       `${API_CONFIG.baseURL}${API_ENDPOINTS.estoques.update(id)}`,
@@ -53,30 +52,40 @@ export class EstoqueService {
     );
   }
 
-  /**
-   * Deleta um estoque
-   */
+  // ------------------------------------------------------------
+  // Deletar estoque
+  // ------------------------------------------------------------
   delete(id: number): Observable<void> {
     return this.http.delete<void>(
       `${API_CONFIG.baseURL}${API_ENDPOINTS.estoques.delete(id)}`
     );
   }
 
-  /**
-   * Lista os produtos de um estoque específico
-   */
+  // ------------------------------------------------------------
+  // Listar produtos de um estoque
+  // ------------------------------------------------------------
   listarProdutos(id: number): Observable<Produto[]> {
     return this.http.get<Produto[]>(
       `${API_CONFIG.baseURL}${API_ENDPOINTS.estoques.listarProdutos(id)}`
     );
   }
 
-  /**
-   * Calcula o valor total de um estoque
-   */
+  // ------------------------------------------------------------
+  // Calcular valor total do estoque
+  // ------------------------------------------------------------
   calcularValorTotal(id: number): Observable<ValorTotalEstoque> {
     return this.http.get<ValorTotalEstoque>(
       `${API_CONFIG.baseURL}${API_ENDPOINTS.estoques.calcularValorTotal(id)}`
     );
   }
+
+  // ------------------------------------------------------------
+  // Listar estoques do usuário autenticado
+  // ------------------------------------------------------------
+  meusEstoques(usuarioId: number): Observable<Estoque[]> {
+  return this.http.get<Estoque[]>(
+    `${API_CONFIG.baseURL}${API_ENDPOINTS.estoques.meusEstoques}?usuarioId=${usuarioId}`
+  );
+}
+
 }

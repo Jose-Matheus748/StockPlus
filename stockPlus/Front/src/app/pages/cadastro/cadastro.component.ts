@@ -79,7 +79,7 @@ export class CadastroComponent implements OnInit {
 
           this.authService.login(loginCredentials).subscribe({
             next: () => {
-              this.router.navigate(['/estoque']);
+              this.router.navigate(['/estoques']);
             },
             error: () => {
               this.router.navigate(['/login']);

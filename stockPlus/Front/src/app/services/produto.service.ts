@@ -19,10 +19,7 @@ export class ProdutoService {
    * Cria um novo produto
    */
   create(produto: Produto): Observable<Produto> {
-    return this.http.post<Produto>(
-      `${API_CONFIG.baseURL}${API_ENDPOINTS.produtos.create}`,
-      produto
-    );
+    return this.http.post<Produto>(`${API_CONFIG.baseURL}${API_ENDPOINTS.produtos.create}`, produto);
   }
 
   /**
@@ -88,6 +85,15 @@ export class ProdutoService {
   getValorTotal(): Observable<number> {
     return this.http.get<number>(
       `${API_CONFIG.baseURL}${API_ENDPOINTS.produtos.getValorTotal}`
+    );
+  }
+
+  /**
+   * Lista produtos de um estoque específico
+   */
+  listarPorEstoque(estoqueId: number): Observable<Produto[]> {
+    return this.http.get<Produto[]>(
+      `${API_CONFIG.baseURL}${API_ENDPOINTS.estoques.listarProdutos(estoqueId)}`
     );
   }
 }
