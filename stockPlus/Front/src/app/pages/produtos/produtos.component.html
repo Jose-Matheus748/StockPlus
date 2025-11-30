@@ -32,10 +32,6 @@
           </span>
 
           <span class="info-item">
-            <strong>Quantidade:</strong> {{ produto.quantidade }}
-          </span>
-
-          <span class="info-item">
             <strong>Fornecedor:</strong> {{ produto.fornecedor }}
           </span>
 
@@ -43,6 +39,57 @@
             <strong>Marca:</strong> {{ produto.marca }}
           </span>
         </div>
+
+        <div class="produto-acoes">
+          <button class="btn-acao" (click)="abrirFormulario(produto)">✏️</button>
+          <button class="btn-delete btn-acao" *ngIf="produto.id !== null" (click)="deletarProduto(produto.id)">🗑️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL PARA EDIÇÃO -->
+    <div *ngIf="showFormModal" class="modal-overlay" (click)="fecharFormulario()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+          <h3>{{ isEditMode ? 'Editar Produto' : 'Adicionar Produto' }}</h3>
+          <button class="btn-close" (click)="fecharFormulario()">✕</button>
+        </div>
+
+        <form class="modal-form">
+
+          <div class="form-group">
+            <label for="nome">Nome *</label>
+            <input type="text" id="nome" [(ngModel)]="formData.nome" name="nome" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label for="fornecedor">Fornecedor *</label>
+            <input type="text" id="fornecedor" [(ngModel)]="formData.fornecedor" name="fornecedor" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label for="marca">Marca *</label>
+            <input type="text" id="marca" [(ngModel)]="formData.marca" name="marca" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label for="precoUnitario">Preço Unitário *</label>
+            <input type="number" id="precoUnitario" [(ngModel)]="formData.precoUnitario" name="precoUnitario" step="0.01" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label for="descricao">Descrição</label>
+            <textarea id="descricao" [(ngModel)]="formData.descricao" name="descricao" rows="3" class="form-control"></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" (click)="fecharFormulario()">Cancelar</button>
+            <button type="button" class="btn-primary" (click)="salvarProduto()">
+              {{ isEditMode ? 'Atualizar' : 'Adicionar Produto' }}
+            </button>
+          </div>
+        </form>
 
       </div>
     </div>

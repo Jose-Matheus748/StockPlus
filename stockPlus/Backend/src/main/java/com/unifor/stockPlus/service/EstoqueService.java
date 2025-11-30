@@ -79,7 +79,7 @@ public class EstoqueService {
     public EstoqueDTO criarEstoquePadrao(Usuario usuario) {
         Estoque estoque = new Estoque();
         estoque.setNome("Estoque Padrão");
-        estoque.setDescricao("Estoque padrão criado automaticamente");
+        estoque.setDescricao("Seu primeiro estoque");
         estoque.setUsuario(usuario);
 
         Estoque saved = estoqueRepository.save(estoque);

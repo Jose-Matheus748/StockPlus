@@ -34,8 +34,7 @@
   color: white;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(212, 165, 116, 0.3);
+    background: linear-gradient(135deg, #6f583b 0%, #6f583b 100%);
   }
 }
 
@@ -138,4 +137,119 @@
   background-color: #fee;
   color: #c33;
   border: 1px solid #fcc;
+}
+
+/* --- MODAL OVERLAY --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* --- MODAL CONTENT --- */
+.modal-content {
+  background: #fff;
+  width: 500px;
+  max-width: 95%;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* --- HEADER DO MODAL --- */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  color: #777;
+  transition: 0.2s;
+}
+
+.btn-close:hover {
+  color: #000;
+}
+
+/* --- CAMPOS DO FORMULÁRIO --- */
+.form-group {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.form-control {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+/* --- FOOTER DO MODAL --- */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.btn-secondary {
+  background: #eee;
+  color: #333;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: #ddd;
+}
+
+/* --- BOTÕES DO CARD --- */
+.produto-acoes .btn-acao {
+  background: #f0f0f0;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.btn-delete {
+  background: #ffe0e0 !important;
+}
+
+.btn-delete:hover {
+  background: #ffb3b3 !important;
 }

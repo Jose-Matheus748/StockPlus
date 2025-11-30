@@ -30,7 +30,7 @@ export interface Estoque {
 }
 
 export interface Produto {
-  id?: number;
+  id: number | null;
   nome: string;
   descricao?: string;
   fornecedor: string;
@@ -40,6 +40,7 @@ export interface Produto {
   estoqueId?: number;
   usuarioId?: number;
 }
+
 
 export interface ValorTotalEstoque {
   valorTotal: number;
