@@ -100,4 +100,10 @@ export class AuthService {
   setToken(token: string): void {
     localStorage.setItem(TOKEN_KEY, token);
   }
+
+  // auth.service.ts
+  getUsuarioId(): number | null {
+    const u = this.getCurrentUserFromStorage();
+    return u && u.id ? Number(u.id) : null;
+  }
 }

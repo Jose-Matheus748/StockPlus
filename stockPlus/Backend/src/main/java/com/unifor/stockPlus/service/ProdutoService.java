@@ -3,6 +3,7 @@ package com.unifor.stockPlus.service;
 import com.unifor.stockPlus.dto.ProdutoDTO;
 import com.unifor.stockPlus.entity.Estoque;
 import com.unifor.stockPlus.entity.Produto;
+import com.unifor.stockPlus.entity.Usuario;
 import com.unifor.stockPlus.exceptions.ResourceNotFoundException;
 import com.unifor.stockPlus.repository.EstoqueRepository;
 import com.unifor.stockPlus.repository.ProdutoRepository;
@@ -20,14 +21,26 @@ public class ProdutoService {
         this.estoqueRepository = estoqueRepo;
     }
 
-    public ProdutoDTO create(ProdutoDTO dto) {
+    public ProdutoDTO create(ProdutoDTO dto, Usuario usuarioCriador) {
         Estoque estoque = estoqueRepository.findById(dto.getEstoqueId())
                 .orElseThrow(() -> new ResourceNotFoundException("Estoque não encontrado"));
 
         Produto produto = dto.toEntity(estoque);
+        produto.setUsuario(usuarioCriador);
         produtoRepository.save(produto);
-
         return ProdutoDTO.fromEntity(produto);
+    }
+
+    private Produto converterParaEntidade(ProdutoDTO dto, Usuario usuario) {
+        Produto produto = new Produto();
+
+        produto.setNome(dto.getNome());
+        produto.setDescricao(dto.getDescricao());
+        produto.setPrecoUnitario(dto.getPrecoUnitario());
+        produto.setQuantidade(dto.getQuantidade());
+        produto.setUsuario(usuario);
+
+        return produto;
     }
 
     public List<ProdutoDTO> getByEstoque(Long estoqueId) {
@@ -120,6 +133,13 @@ public class ProdutoService {
     public List<ProdutoDTO> listarPorEstoque(Long estoqueId) {
         List<Produto> produtos = produtoRepository.findByEstoqueId(estoqueId);
         return produtos.stream()
+                .map(ProdutoDTO::fromEntity)
+                .toList();
+    }
+
+    public List<ProdutoDTO> listarPorUsuario(Long usuarioId) {
+        return produtoRepository.findByUsuarioId(usuarioId)
+                .stream()
                 .map(ProdutoDTO::fromEntity)
                 .toList();
     }

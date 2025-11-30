@@ -25,7 +25,7 @@ export interface Estoque {
   id?: number;
   nome: string;
   descricao?: string;
-  usuarioId?: number; // ADICIONAR
+  usuarioId?: number;
   produtos?: Produto[];
 }
 
@@ -38,6 +38,7 @@ export interface Produto {
   quantidade: number;
   precoUnitario: number;
   estoqueId?: number;
+  usuarioId?: number;
 }
 
 export interface ValorTotalEstoque {

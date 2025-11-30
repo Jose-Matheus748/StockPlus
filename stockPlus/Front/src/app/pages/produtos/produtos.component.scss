@@ -1,0 +1,141 @@
+.produtos-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.produtos-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #2c2c2c;
+    margin: 0;
+  }
+}
+
+/* Botões */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #d4a574 0%, #c99a5f 100%);
+  color: white;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 165, 116, 0.3);
+  }
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.mt-3 {
+  margin-top: 20px;
+}
+
+/* Grid */
+.produtos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.produto-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e0d5c7;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+  }
+}
+
+.produto-header-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c2c2c;
+    margin: 0;
+    flex: 1;
+  }
+}
+
+.produto-descricao {
+  font-size: 14px;
+  color: #8b7d6b;
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+.produto-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex: 1;
+}
+
+.info-item {
+  font-size: 13px;
+  color: #2c2c2c;
+
+  strong {
+    color: #d4a574;
+    font-weight: 600;
+  }
+}
+
+.loading,
+.empty-state {
+  text-align: center;
+  padding: 60px 24px;
+  color: #8b7d6b;
+  font-size: 16px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e0d5c7;
+}
+
+.alert {
+  padding: 16px 24px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.alert-danger {
+  background-color: #fee;
+  color: #c33;
+  border: 1px solid #fcc;
+}

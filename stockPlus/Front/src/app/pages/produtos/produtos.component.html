@@ -1,0 +1,56 @@
+<app-layout>
+  <div class="produtos-container">
+
+    <!-- Header -->
+    <div class="produtos-header">
+      <h1>Meus Produtos</h1>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="loading">
+      <p>Carregando produtos...</p>
+    </div>
+
+    <!-- Erro -->
+    <div *ngIf="erro && !isLoading" class="alert alert-danger">
+      {{ erro }}
+    </div>
+
+    <!-- Grid de Produtos -->
+    <div *ngIf="!isLoading && produtos.length > 0" class="produtos-grid">
+      <div *ngFor="let produto of produtos" class="produto-card">
+
+        <div class="produto-header-card">
+          <h3>{{ produto.nome }}</h3>
+        </div>
+
+        <p class="produto-descricao">{{ produto.descricao || 'Sem descrição' }}</p>
+
+        <div class="produto-info">
+          <span class="info-item">
+            <strong>Preço:</strong> R$ {{ produto.precoUnitario | number:'1.2-2' }}
+          </span>
+
+          <span class="info-item">
+            <strong>Quantidade:</strong> {{ produto.quantidade }}
+          </span>
+
+          <span class="info-item">
+            <strong>Fornecedor:</strong> {{ produto.fornecedor }}
+          </span>
+
+          <span class="info-item">
+            <strong>Marca:</strong> {{ produto.marca }}
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Sem produtos -->
+    <div *ngIf="!isLoading && produtos.length === 0" class="empty-state">
+      <p>Você ainda não cadastrou nenhum produto.</p>
+    </div>
+
+  </div>
+</app-layout>

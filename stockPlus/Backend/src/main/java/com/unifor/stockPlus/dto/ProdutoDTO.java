@@ -16,6 +16,7 @@ public class ProdutoDTO {
     private Integer quantidade;
     private Double precoUnitario;
     private Long estoqueId;
+    private Long usuarioId;
 
     public static ProdutoDTO fromEntity(Produto produto) {
         if (produto == null) return null;
@@ -28,6 +29,7 @@ public class ProdutoDTO {
         dto.setMarca(produto.getMarca());
         dto.setQuantidade(produto.getQuantidade());
         dto.setPrecoUnitario(produto.getPrecoUnitario());
+        dto.setUsuarioId(produto.getUsuario() != null ? produto.getUsuario().getId() : null);
 
         if (produto.getEstoque() != null) {
             dto.setEstoqueId(produto.getEstoque().getId());
@@ -46,6 +48,7 @@ public class ProdutoDTO {
         produto.setQuantidade(this.quantidade);
         produto.setPrecoUnitario(this.precoUnitario);
         produto.setEstoque(estoque);
+
         return produto;
     }
 }

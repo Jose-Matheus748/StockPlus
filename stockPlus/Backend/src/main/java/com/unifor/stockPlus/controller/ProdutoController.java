@@ -1,7 +1,10 @@
 package com.unifor.stockPlus.controller;
 
 import com.unifor.stockPlus.dto.ProdutoDTO;
+import com.unifor.stockPlus.entity.Usuario;
 import com.unifor.stockPlus.service.ProdutoService;
+import com.unifor.stockPlus.service.UsuarioService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -11,15 +14,21 @@ import java.util.List;
 public class ProdutoController {
 
     private final ProdutoService produtoService;
+    private final UsuarioService usuarioService;
 
-    public ProdutoController(ProdutoService produtoService) {
+    public ProdutoController(ProdutoService produtoService, UsuarioService usuarioService) {
         this.produtoService = produtoService;
+        this.usuarioService = usuarioService;
     }
 
     @PostMapping
-    public ProdutoDTO create(@RequestBody ProdutoDTO dto) {
-        return produtoService.create(dto);
+    public ResponseEntity<ProdutoDTO> create(@RequestBody ProdutoDTO dto, @RequestParam Long usuarioId) {
+        Usuario usuario = usuarioService.getEntityById(usuarioId);
+        ProdutoDTO novo = produtoService.create(dto, usuario);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(novo);
     }
+
 
     @GetMapping
     public List<ProdutoDTO> getAll() {
@@ -60,5 +69,10 @@ public class ProdutoController {
     public ResponseEntity<List<ProdutoDTO>> listarPorEstoque(@PathVariable Long estoqueId) {
         List<ProdutoDTO> produtos = produtoService.listarPorEstoque(estoqueId);
         return ResponseEntity.ok(produtos);
+    }
+
+    @GetMapping("/meus-produtos")
+    public List<ProdutoDTO> listarMeusProdutos(@RequestParam Long usuarioId) {
+        return produtoService.listarPorUsuario(usuarioId);
     }
 }

@@ -27,6 +27,10 @@ public class Produto {
     private Double precoUnitario;
 
     @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
+
+    @ManyToOne
     @JoinColumn(name = "estoque_id")
     private Estoque estoque;
 }

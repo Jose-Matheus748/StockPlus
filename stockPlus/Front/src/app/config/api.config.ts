@@ -46,5 +46,6 @@ export const API_ENDPOINTS = {
     addQuantidade: (id: number) => `/produtos/${id}/add`,
     removeQuantidade: (id: number) => `/produtos/${id}/remove`,
     getValorTotal: '/produtos/valor-total',
+    listarPorUsuario: (usuarioId: number) => `/produtos/meus-produtos?usuarioId=${usuarioId}`,
   },
 };

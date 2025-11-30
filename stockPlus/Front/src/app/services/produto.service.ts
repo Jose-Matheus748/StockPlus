@@ -18,8 +18,11 @@ export class ProdutoService {
   /**
    * Cria um novo produto
    */
-  create(produto: Produto): Observable<Produto> {
-    return this.http.post<Produto>(`${API_CONFIG.baseURL}${API_ENDPOINTS.produtos.create}`, produto);
+  create(produto: Produto, usuarioId: number): Observable<Produto> {
+    return this.http.post<Produto>(
+      `${API_CONFIG.baseURL}${API_ENDPOINTS.produtos.create}?usuarioId=${usuarioId}`,
+      produto
+    );
   }
 
   /**
@@ -94,6 +97,12 @@ export class ProdutoService {
   listarPorEstoque(estoqueId: number): Observable<Produto[]> {
     return this.http.get<Produto[]>(
       `${API_CONFIG.baseURL}${API_ENDPOINTS.estoques.listarProdutos(estoqueId)}`
+    );
+  }
+
+  getMeusProdutos(usuarioId: number): Observable<Produto[]> {
+    return this.http.get<Produto[]>(
+      `${API_CONFIG.baseURL}${API_ENDPOINTS.produtos.listarPorUsuario(usuarioId)}`
     );
   }
 }

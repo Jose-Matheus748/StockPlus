@@ -6,6 +6,7 @@ import { LayoutComponent } from '../../components/layout/layout.component';
 import { ProdutoService } from '../../services/produto.service';
 import { Produto } from '../../models';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-estoque',
@@ -27,7 +28,8 @@ export class EstoqueComponent implements OnInit {
     marca: '',
     quantidade: 0,
     precoUnitario: 0,
-    estoqueId: 0
+    estoqueId: 0,
+    usuarioId: 0
   };
 
   // Resumo do estoque
@@ -38,6 +40,7 @@ export class EstoqueComponent implements OnInit {
 
   constructor(
     private produtoService: ProdutoService,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -129,35 +132,46 @@ export class EstoqueComponent implements OnInit {
    * Salva um novo produto ou atualiza um existente
    */
   salvarProduto(): void {
-    if (!this.formData.nome || !this.formData.fornecedor || !this.formData.marca) {
-      alert('Por favor, preencha todos os campos obrigatórios');
-      return;
-    }
-
-    if (this.isEditMode && this.formData.id) {
-      this.produtoService.update(this.formData.id, this.formData).subscribe({
-        next: () => {
-          this.carregarProdutos();
-          this.fecharFormulario();
-          alert('Produto atualizado com sucesso!');
-        },
-        error: (error) => {
-          alert('Erro ao atualizar produto: ' + error.error?.message);
-        },
-      });
-    } else {
-      this.produtoService.create(this.formData).subscribe({
-        next: () => {
-          this.carregarProdutos();
-          this.fecharFormulario();
-          alert('Produto adicionado com sucesso!');
-        },
-        error: (error) => {
-          alert('Erro ao adicionar produto: ' + error.error?.message);
-        },
-      });
-    }
+  if (!this.formData.nome || !this.formData.fornecedor || !this.formData.marca) {
+    alert('Por favor, preencha todos os campos obrigatórios');
+    return;
   }
+
+  const usuarioId = this.authService.getUsuarioId();
+  if (!usuarioId) {
+    alert('Usuário não autenticado. Faça login novamente.');
+    return;
+  }
+
+  if (this.isEditMode && this.formData.id) {
+    // atualizar (se seu backend NÃO exigir usuarioId no update)
+    this.produtoService.update(this.formData.id, this.formData).subscribe({
+      next: () => {
+        this.carregarProdutos();
+        this.fecharFormulario();
+        alert('Produto atualizado com sucesso!');
+      },
+      error: (error) => {
+        console.error(error);
+        alert('Erro ao atualizar produto: ' + (error.error?.message || 'Erro desconhecido'));
+      }
+    });
+  } else {
+    // criar (envia também o usuarioId como query param)
+    this.produtoService.create(this.formData, usuarioId).subscribe({
+      next: () => {
+        this.carregarProdutos();
+        this.fecharFormulario();
+        alert('Produto adicionado com sucesso!');
+      },
+      error: (error) => {
+        console.error(error);
+        alert('Erro ao adicionar produto: ' + (error.error?.message || 'Erro desconhecido'));
+      }
+    });
+  }
+}
+
 
   /**
    * Deleta um produto
