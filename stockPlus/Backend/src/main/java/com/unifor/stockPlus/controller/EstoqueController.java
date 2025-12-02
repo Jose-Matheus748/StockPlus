@@ -1,11 +1,13 @@
 package com.unifor.stockPlus.controller;
 
 import com.unifor.stockPlus.dto.EstoqueDTO;
-import com.unifor.stockPlus.dto.ProdutoDTO;
+import com.unifor.stockPlus.dto.ProdutoEmEstoqueDTO;
 import com.unifor.stockPlus.dto.ValorTotalEstoqueDTO;
 import com.unifor.stockPlus.entity.Usuario;
 import com.unifor.stockPlus.service.EstoqueService;
+import com.unifor.stockPlus.service.ProdutoEstoqueService;
 import com.unifor.stockPlus.service.UsuarioService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,16 +19,26 @@ import java.util.List;
 @RequestMapping("/estoques")
 public class EstoqueController {
 
-    @Autowired
-    private EstoqueService estoqueService;
+    private final EstoqueService estoqueService;
+    private final UsuarioService usuarioService;
+    private final ProdutoEstoqueService produtoEstoqueService;
 
     @Autowired
-    private UsuarioService usuarioService;
+    public EstoqueController(EstoqueService estoqueService,
+                             UsuarioService usuarioService,
+                             ProdutoEstoqueService produtoEstoqueService) {
+        this.estoqueService = estoqueService;
+        this.usuarioService = usuarioService;
+        this.produtoEstoqueService = produtoEstoqueService;
+    }
 
     // Criar estoque
     @PostMapping
-    public ResponseEntity<EstoqueDTO> create(@RequestBody EstoqueDTO dto) {
-        Usuario usuario = usuarioService.getEntityById(dto.getUsuarioId());
+    public ResponseEntity<EstoqueDTO> create(
+            @RequestBody EstoqueDTO dto,
+            @RequestParam Long usuarioId
+    ) {
+        Usuario usuario = usuarioService.getEntityById(usuarioId);
         EstoqueDTO criado = estoqueService.create(dto, usuario);
         return ResponseEntity.status(HttpStatus.CREATED).body(criado);
     }
@@ -41,9 +53,10 @@ public class EstoqueController {
         return estoqueService.getById(id);
     }
 
+    // Listar produtos dentro do estoque
     @GetMapping("/{id}/produtos")
-    public List<ProdutoDTO> listarProdutos(@PathVariable Long id) {
-        return estoqueService.listarProdutosDoEstoque(id);
+    public List<ProdutoEmEstoqueDTO> listarProdutos(@PathVariable Long id) {
+        return produtoEstoqueService.listarProdutosPorEstoque(id);
     }
 
     @PutMapping("/{id}")
@@ -57,9 +70,6 @@ public class EstoqueController {
         return ResponseEntity.ok(atualizado);
     }
 
-    // ------------------------------------------------------------
-    // DELETE CORRIGIDO
-    // ------------------------------------------------------------
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable Long id,
@@ -79,15 +89,5 @@ public class EstoqueController {
     public ResponseEntity<List<EstoqueDTO>> meusEstoques(@RequestParam Long usuarioId) {
         List<EstoqueDTO> estoques = estoqueService.listarPorUsuario(usuarioId);
         return ResponseEntity.ok(estoques);
-    }
-
-    @PostMapping("/novo")
-    public ResponseEntity<EstoqueDTO> criarNovoEstoque(
-            @RequestBody EstoqueDTO estoqueDTO,
-            @RequestParam Long usuarioId
-    ) {
-        Usuario usuario = usuarioService.getEntityById(usuarioId);
-        EstoqueDTO novoEstoque = estoqueService.create(estoqueDTO, usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoEstoque);
     }
 }

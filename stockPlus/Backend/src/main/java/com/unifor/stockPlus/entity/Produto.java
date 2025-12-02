@@ -1,7 +1,10 @@
 package com.unifor.stockPlus.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "produtos")
@@ -22,15 +25,13 @@ public class Produto {
 
     private String marca;
 
-    private int quantidade;
-
     private Double precoUnitario;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @ManyToOne
-    @JoinColumn(name = "estoque_id")
-    private Estoque estoque;
+    @JsonIgnore
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProdutoEstoque> produtoEstoques;
 }

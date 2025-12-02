@@ -1,13 +1,9 @@
-/**
- * Componente de Lista de Produtos
- * Exibe todos os produtos criados pelo usuário
- */
-
+// imports permanecem os mesmos
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ProdutoService } from '../../services/produto.service';
-import { Produto } from '../../models';
+import { Produto } from '../../models';                // <- usar apenas Produto
 import { AuthService } from '../../services/auth.service';
 import { LayoutComponent } from '../../components/layout/layout.component';
 import { FormsModule } from '@angular/forms';
@@ -21,7 +17,9 @@ import { FormsModule } from '@angular/forms';
 })
 export class ProdutosComponent implements OnInit {
 
+  // VOLTOU A SER Produto[] (não ProdutoEstoque[])
   produtos: Produto[] = [];
+
   isLoading: boolean = true;
   erro: string = '';
 
@@ -29,14 +27,12 @@ export class ProdutosComponent implements OnInit {
   isEditMode: boolean = false;
 
   formData: Produto = {
-    id: 0,
+    id: null,
     nome: '',
     descricao: '',
     fornecedor: '',
     marca: '',
-    quantidade: 0,
     precoUnitario: 0,
-    estoqueId: 0,
     usuarioId: 0
   };
 
@@ -64,6 +60,7 @@ export class ProdutosComponent implements OnInit {
       return;
     }
 
+    // getMeusProdutos retorna Produto[] — mantemos assim
     this.produtoService.getMeusProdutos(usuario.id).subscribe({
       next: (lista) => {
         this.produtos = lista;
@@ -84,14 +81,12 @@ export class ProdutosComponent implements OnInit {
     } else {
       this.isEditMode = false;
       this.formData = {
-        id: 0,
+        id: null,
         nome: '',
         descricao: '',
         fornecedor: '',
         marca: '',
-        quantidade: 0,
         precoUnitario: 0,
-        estoqueId: 0,
         usuarioId: 0
       };
     }
@@ -103,32 +98,8 @@ export class ProdutosComponent implements OnInit {
     this.showFormModal = false;
   }
 
-  adicionarQuantidade(produto: Produto): void {
-    if (!produto || !produto.id){
-      alert('Produto não encontrado.');
-      return;
-    }
-    produto.quantidade++;
-    this.produtoService.update(produto.id, produto).subscribe({
-      next: () => this.carregarProdutos(),
-      error: (error) => console.error(error)
-    });
-  }
-
-  removerQuantidade(produto: Produto): void {
-    if (!produto || !produto.id){
-      alert('Produto não encontrado.');
-      return;
-    }
-    if (produto.quantidade > 0) produto.quantidade--;
-    this.produtoService.update(produto.id, produto).subscribe({
-      next: () => this.carregarProdutos(),
-      error: (error) => console.error(error)
-    });
-  }
-
-  deletarProduto(id: number | null): void {
-    if (id === null) return;
+  deletarProduto(id: number | null | undefined): void {
+    if (id == null) return;
 
     if (confirm('Tem certeza que deseja deletar este produto?')) {
       this.produtoService.delete(id).subscribe({
@@ -143,11 +114,20 @@ export class ProdutosComponent implements OnInit {
     }
   }
 
+
   salvarProduto(): void {
     if (!this.formData.nome || !this.formData.fornecedor || !this.formData.marca) {
       alert('Preencha todos os campos obrigatórios.');
       return;
     }
+
+    const usuarioId = this.authService.getUsuarioId();
+    if (!usuarioId) {
+      alert("Erro: usuário não autenticado!");
+      return;
+    }
+
+    this.formData.usuarioId = usuarioId;
 
     if (this.isEditMode && this.formData.id) {
       // Atualizar produto
@@ -164,13 +144,7 @@ export class ProdutosComponent implements OnInit {
       });
 
     } else {
-      // Criar novo produto
-      const usuarioId = this.authService.getUsuarioId();
-      if (!usuarioId) {
-        alert("Erro: usuário não autenticado!");
-        return;
-      }
-
+      // Criar produto
       this.produtoService.create(this.formData, usuarioId).subscribe({
         next: () => {
           this.carregarProdutos();

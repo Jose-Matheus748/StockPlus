@@ -8,9 +8,8 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { API_CONFIG, API_ENDPOINTS } from '../config/api.config';
-import { Usuario, LoginRequest, AuthResponse } from '../models';
+import { Usuario, LoginRequest } from '../models';
 
-const TOKEN_KEY = 'authToken';
 const USER_KEY = 'currentUser';
 
 @Injectable({
@@ -20,6 +19,7 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<Usuario | null>(
     this.getCurrentUserFromStorage()
   );
+
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient) {}
@@ -33,7 +33,6 @@ export class AuthService {
       .pipe(
         tap((usuario) => {
           this.setCurrentUser(usuario);
-          this.currentUserSubject.next(usuario);
         })
       );
   }
@@ -52,7 +51,6 @@ export class AuthService {
    * Faz logout do usuário
    */
   logout(): void {
-    localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     this.currentUserSubject.next(null);
   }
@@ -88,22 +86,10 @@ export class AuthService {
   }
 
   /**
-   * Obtém o token de autenticação
+   * Obtém apenas o ID do usuário autenticado
    */
-  getToken(): string | null {
-    return localStorage.getItem(TOKEN_KEY);
-  }
-
-  /**
-   * Armazena o token de autenticação
-   */
-  setToken(token: string): void {
-    localStorage.setItem(TOKEN_KEY, token);
-  }
-
-  // auth.service.ts
   getUsuarioId(): number | null {
-    const u = this.getCurrentUserFromStorage();
-    return u && u.id ? Number(u.id) : null;
+    const user = this.getCurrentUser();
+    return user?.id ?? null;
   }
 }

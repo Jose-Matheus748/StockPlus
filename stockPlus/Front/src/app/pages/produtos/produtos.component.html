@@ -42,7 +42,7 @@
 
         <div class="produto-acoes">
           <button class="btn-acao" (click)="abrirFormulario(produto)">✏️</button>
-          <button class="btn-delete btn-acao" *ngIf="produto.id !== null" (click)="deletarProduto(produto.id)">🗑️</button>
+          <button class="btn-delete btn-acao" *ngIf="produto.id !== null" (click)="deletarProduto(produto.id!)">🗑️</button>
         </div>
       </div>
     </div>

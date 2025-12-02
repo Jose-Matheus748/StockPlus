@@ -1,12 +1,16 @@
 package com.unifor.stockPlus.controller;
 
 import com.unifor.stockPlus.dto.ProdutoDTO;
+import com.unifor.stockPlus.dto.ProdutoEmEstoqueDTO;
 import com.unifor.stockPlus.entity.Usuario;
+import com.unifor.stockPlus.service.ProdutoEstoqueService;
 import com.unifor.stockPlus.service.ProdutoService;
 import com.unifor.stockPlus.service.UsuarioService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -15,20 +19,27 @@ public class ProdutoController {
 
     private final ProdutoService produtoService;
     private final UsuarioService usuarioService;
+    private final ProdutoEstoqueService produtoEstoqueService;
 
-    public ProdutoController(ProdutoService produtoService, UsuarioService usuarioService) {
+    public ProdutoController(ProdutoService produtoService,
+                             UsuarioService usuarioService,
+                             ProdutoEstoqueService produtoEstoqueService) {
         this.produtoService = produtoService;
         this.usuarioService = usuarioService;
+        this.produtoEstoqueService = produtoEstoqueService;
     }
 
+    // Criar produto
     @PostMapping
-    public ResponseEntity<ProdutoDTO> create(@RequestBody ProdutoDTO dto, @RequestParam Long usuarioId) {
+    public ResponseEntity<ProdutoDTO> create(
+            @RequestBody ProdutoDTO dto,
+            @RequestParam Long usuarioId) {
+
         Usuario usuario = usuarioService.getEntityById(usuarioId);
         ProdutoDTO novo = produtoService.create(dto, usuario);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(novo);
     }
-
 
     @GetMapping
     public List<ProdutoDTO> getAll() {
@@ -50,29 +61,54 @@ public class ProdutoController {
         produtoService.delete(id);
     }
 
-    @PostMapping("/{id}/add")
-    public ProdutoDTO add(@PathVariable Long id, @RequestParam int quantidade) {
-        return produtoService.addQuantity(id, quantidade);
+    // ===========================
+    // PRODUTO ↔ ESTOQUE
+    // ===========================
+
+    // Adicionar produto ao estoque
+    @PostMapping("/{produtoId}/adicionar")
+    public ProdutoEmEstoqueDTO adicionarEstoque(
+            @PathVariable Long produtoId,
+            @RequestParam Long estoqueId,
+            @RequestParam int quantidade
+    ) {
+        return toDTO(
+                produtoEstoqueService.adicionarProdutoAoEstoque(produtoId, estoqueId, quantidade)
+        );
     }
 
-    @PostMapping("/{id}/remove")
-    public ProdutoDTO remove(@PathVariable Long id, @RequestParam int quantidade) {
-        return produtoService.removeQuantity(id, quantidade);
+    // Atualizar quantidade
+    @PutMapping("/{produtoId}/atualizar")
+    public ProdutoEmEstoqueDTO atualizarQuantidade(
+            @PathVariable Long produtoId,
+            @RequestParam Long estoqueId,
+            @RequestParam int quantidade
+    ) {
+        return toDTO(
+                produtoEstoqueService.atualizarQuantidade(produtoId, estoqueId, quantidade)
+        );
     }
 
-    @GetMapping("/valor-total")
-    public Double getValorTotalEstoque() {
-        return produtoService.calcularValorTotalEstoque();
+    // Remover produto do estoque
+    @DeleteMapping("/{produtoId}/remover")
+    public ResponseEntity<Void> remover(
+            @PathVariable Long produtoId,
+            @RequestParam Long estoqueId
+    ) {
+        produtoEstoqueService.removerProdutoDoEstoque(produtoId, estoqueId);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/estoque/{estoqueId}")
-    public ResponseEntity<List<ProdutoDTO>> listarPorEstoque(@PathVariable Long estoqueId) {
-        List<ProdutoDTO> produtos = produtoService.listarPorEstoque(estoqueId);
-        return ResponseEntity.ok(produtos);
+    // Listar estoques onde o produto existe
+    @GetMapping("/{produtoId}/estoques")
+    public List<ProdutoEmEstoqueDTO> listarEstoquesDeUmProduto(
+            @PathVariable Long produtoId
+    ) {
+        return produtoEstoqueService.listarEstoquesPorProduto(produtoId);
     }
 
-    @GetMapping("/meus-produtos")
-    public List<ProdutoDTO> listarMeusProdutos(@RequestParam Long usuarioId) {
-        return produtoService.listarPorUsuario(usuarioId);
+    // Converter entidade para DTO
+    private ProdutoEmEstoqueDTO toDTO(Object peObj) {
+        return (ProdutoEmEstoqueDTO) peObj;
     }
 }

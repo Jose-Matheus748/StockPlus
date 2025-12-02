@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LayoutComponent } from '../../components/layout/layout.component';
 import { ProdutoService } from '../../services/produto.service';
-import { Produto } from '../../models';
+import { Produto, ProdutoEstoque } from '../../models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
@@ -15,29 +15,6 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./estoque.component.scss'],
 })
 export class EstoqueComponent implements OnInit {
-  produtos: Produto[] = [];
-  isLoading = true;
-  erro = '';
-  showFormModal = false;
-  isEditMode = false;
-
-  formData: Produto = {
-    id: null,
-    nome: '',
-    descricao: '',
-    fornecedor: '',
-    marca: '',
-    quantidade: 0,
-    precoUnitario: 0,
-    estoqueId: 0
-  };
-
-  valorTotalEstoque = 0;
-  quantidadeTotalItens = 0;
-  totalProdutos = 0;
-  precoMedioUnitario = 0;
-
-  estoqueId!: number;
 
   constructor(
     private produtoService: ProdutoService,
@@ -45,6 +22,35 @@ export class EstoqueComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router
   ) {}
+
+  produtos: ProdutoEstoque[] = [];
+  isLoading = true;
+  erro = '';
+  showFormModal = false;
+  isEditMode = false;
+
+  estoqueId!: number;
+
+  // FORM DATA 100% COMPATÍVEL COM A INTERFACE
+  formData: ProdutoEstoque = {
+    id: 0,
+    quantidade: 0,
+    produto: {
+      id: 0,
+      nome: '',
+      descricao: '',
+      fornecedor: '',
+      marca: '',
+      precoUnitario: 0,
+      usuarioId: 0
+    }
+  };
+
+  // Resumo
+  valorTotalEstoque = 0;
+  quantidadeTotalItens = 0;
+  totalProdutos = 0;
+  precoMedioUnitario = 0;
 
   ngOnInit(): void {
     this.estoqueId = Number(this.route.snapshot.paramMap.get('id'));
@@ -63,7 +69,21 @@ export class EstoqueComponent implements OnInit {
 
     this.produtoService.listarPorEstoque(this.estoqueId).subscribe({
       next: (data) => {
-        this.produtos = data;
+        // Normaliza valores vindos do backend
+        this.produtos = data.map(pe => ({
+          id: pe.id ?? 0,
+          quantidade: pe.quantidade ?? 0,
+          produto: {
+            id: pe.produto.id ?? 0,
+            nome: pe.produto.nome ?? '',
+            descricao: pe.produto.descricao ?? '',
+            fornecedor: pe.produto.fornecedor ?? '',
+            marca: pe.produto.marca ?? '',
+            precoUnitario: pe.produto.precoUnitario ?? 0,
+            usuarioId: pe.produto.usuarioId ?? 0
+          }
+        }));
+
         this.calcularResumo();
         this.isLoading = false;
       },
@@ -77,13 +97,15 @@ export class EstoqueComponent implements OnInit {
   calcularResumo(): void {
     this.totalProdutos = this.produtos.length;
     this.quantidadeTotalItens = this.produtos.reduce((s, p) => s + p.quantidade, 0);
+
     this.valorTotalEstoque = this.produtos.reduce(
-      (s, p) => s + p.quantidade * p.precoUnitario,
+      (s, p) => s + (p.quantidade * p.produto.precoUnitario),
       0
     );
+
     this.precoMedioUnitario =
       this.totalProdutos > 0
-        ? this.produtos.reduce((s, p) => s + p.precoUnitario, 0) / this.totalProdutos
+        ? this.produtos.reduce((s, p) => s + p.produto.precoUnitario, 0) / this.totalProdutos
         : 0;
   }
 
@@ -91,22 +113,35 @@ export class EstoqueComponent implements OnInit {
     this.isEditMode = false;
 
     this.formData = {
-      id: null,
-      nome: '',
-      descricao: '',
-      fornecedor: '',
-      marca: '',
+      id: 0,
       quantidade: 0,
-      precoUnitario: 0,
-      estoqueId: this.estoqueId
+      produto: {
+        id: 0,
+        nome: '',
+        descricao: '',
+        fornecedor: '',
+        marca: '',
+        precoUnitario: 0,
+        usuarioId: this.authService.getUsuarioId() ?? 0
+      }
     };
 
     this.showFormModal = true;
   }
 
-  editarProduto(produto: Produto): void {
+  editarProduto(item: ProdutoEstoque): void {
     this.isEditMode = true;
-    this.formData = { ...produto };
+
+    this.formData = {
+      id: item.id ?? 0,
+      quantidade: item.quantidade,
+      produto: {
+        ...item.produto,
+        id: item.produto.id ?? 0,
+        usuarioId: item.produto.usuarioId ?? 0
+      }
+    };
+
     this.showFormModal = true;
   }
 
@@ -114,94 +149,107 @@ export class EstoqueComponent implements OnInit {
     this.showFormModal = false;
   }
 
+  voltarEstoques(): void {
+    this.router.navigate(['/estoques']);
+  }
+
   salvarProduto(): void {
-    if (!this.formData.nome || !this.formData.fornecedor || !this.formData.marca) {
-      alert('Por favor, preencha todos os campos obrigatórios');
+
+    if (!this.formData.produto.nome || !this.formData.produto.fornecedor || !this.formData.produto.marca) {
+      alert('Preencha todos os campos obrigatórios');
       return;
     }
 
-    const usuarioId = this.authService.getUsuarioId();
-
-    if (!usuarioId) {
-      alert('Usuário não autenticado. Faça login novamente.');
+    if (this.formData.quantidade <= 0) {
+      alert('A quantidade deve ser maior que 0');
       return;
     }
 
-    if (this.isEditMode && this.formData.id != null) {
+    const produto: Produto = {
+      ...this.formData.produto,
+      id: this.formData.produto.id ?? 0,
+      usuarioId: this.formData.produto.usuarioId ?? 0
+    };
 
-      this.produtoService.update(this.formData.id, this.formData).subscribe({
+    // Se for edição:
+    if (this.isEditMode && produto.id !== 0) {
+      this.produtoService.updateProdutoEstoque(
+        produto,
+        this.formData.quantidade,
+        this.estoqueId
+      ).subscribe({
         next: () => {
           this.carregarProdutos();
           this.fecharFormulario();
           alert('Produto atualizado com sucesso!');
         },
-        error: (error) => {
-          alert('Erro ao atualizar produto: ' + (error.error?.message || 'Erro desconhecido'));
-        },
+        error: (error) =>
+          alert('Erro ao atualizar produto: ' + (error.error?.message || 'Erro desconhecido')),
       });
 
     } else {
-
-      this.formData.id = null;
-
-      this.produtoService.create(this.formData, usuarioId).subscribe({
+      // Criar novo produto no estoque
+      this.produtoService.createInEstoque(
+        produto,
+        this.formData.quantidade,
+        this.estoqueId
+      ).subscribe({
         next: () => {
           this.carregarProdutos();
           this.fecharFormulario();
-          alert('Produto adicionado com sucesso!');
+          alert('Produto adicionado ao estoque com sucesso!');
         },
-        error: (error) => {
-          alert('Erro ao adicionar produto: ' + (error.error?.message || 'Erro desconhecido'));
-        },
-      });
-    }
-  }
-
-  deletarProduto(id: number | null | undefined): void {
-    if (!id) return;
-
-    if (confirm('Tem certeza que deseja deletar este produto?')) {
-      this.produtoService.delete(id).subscribe({
-        next: () => {
-          this.carregarProdutos();
-          alert('Produto deletado com sucesso!');
-        },
-        error: (error) => {
-          alert('Erro ao deletar produto: ' + error.error?.message);
-        },
-      });
-    }
-  }
-
-  adicionarQuantidade(produto: Produto): void {
-    const quantidade = prompt('Quantos itens deseja adicionar?', '1');
-
-    if (quantidade && Number(quantidade) > 0) {
-      this.produtoService.addQuantidade(produto.id!, Number(quantidade)).subscribe({
-        next: () => this.carregarProdutos(),
         error: (error) =>
-          alert('Erro ao adicionar quantidade: ' + error.error?.message),
+          alert('Erro ao adicionar produto: ' + (error.error?.message || 'Erro desconhecido')),
       });
     }
   }
 
-  removerQuantidade(produto: Produto): void {
-    const quantidade = prompt('Quantos itens deseja remover?', '1');
-
-    if (quantidade && Number(quantidade) > 0) {
-      this.produtoService.removeQuantidade(produto.id!, Number(quantidade)).subscribe({
-        next: () => this.carregarProdutos(),
-        error: (error) =>
-          alert('Erro ao remover quantidade: ' + error.error?.message),
-      });
+  deletarProdutoEstoque(id: number): void {
+    if (!id) {
+      alert("ID inválido.");
+      return;
     }
+
+    this.produtoService.removerDoEstoque(id).subscribe(() => {
+      this.produtos = this.produtos.filter((p) => p.id !== id);
+      this.calcularResumo();
+    });
   }
 
-  calcularValorTotal(produto: Produto): number {
-    return produto.quantidade * produto.precoUnitario;
+  adicionarQuantidade(item: ProdutoEstoque): void {
+    const novaQtd = item.quantidade + 1;
+
+    const produto: Produto = {
+      ...item.produto,
+      id: item.produto.id ?? 0,
+      usuarioId: item.produto.usuarioId ?? 0
+    };
+
+    this.produtoService
+      .updateProdutoEstoque(produto, novaQtd, this.estoqueId)
+      .subscribe(() => {
+        item.quantidade = novaQtd;
+        this.calcularResumo();
+      });
   }
 
-  voltarEstoques(): void {
-    this.router.navigate(['/estoques']);
+  removerQuantidade(item: ProdutoEstoque): void {
+    if (item.quantidade === 0) return;
+
+    const novaQtd = item.quantidade - 1;
+
+    const produto: Produto = {
+      ...item.produto,
+      id: item.produto.id ?? 0,
+      usuarioId: item.produto.usuarioId ?? 0
+    };
+
+    this.produtoService
+      .updateProdutoEstoque(produto, novaQtd, this.estoqueId)
+      .subscribe(() => {
+        item.quantidade = novaQtd;
+        this.calcularResumo();
+      });
   }
 }

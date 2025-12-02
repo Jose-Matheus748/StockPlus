@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_CONFIG, API_ENDPOINTS } from '../config/api.config';
-import { Estoque, Produto, ValorTotalEstoque } from '../models';
+import { Estoque, Produto, ProdutoEstoque, ValorTotalEstoque } from '../models';
 
 @Injectable({
   providedIn: 'root',
@@ -65,8 +65,8 @@ export class EstoqueService {
   // ------------------------------------------------------------
   // Listar produtos de um estoque
   // ------------------------------------------------------------
-  listarProdutos(id: number): Observable<Produto[]> {
-    return this.http.get<Produto[]>(
+  listarProdutos(id: number): Observable<ProdutoEstoque[]> {
+   return this.http.get<ProdutoEstoque[]>(
       `${API_CONFIG.baseURL}${API_ENDPOINTS.estoques.listarProdutos(id)}`
     );
   }

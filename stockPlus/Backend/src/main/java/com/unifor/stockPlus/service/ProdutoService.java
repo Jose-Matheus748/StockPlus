@@ -1,142 +1,75 @@
 package com.unifor.stockPlus.service;
 
 import com.unifor.stockPlus.dto.ProdutoDTO;
-import com.unifor.stockPlus.entity.Estoque;
 import com.unifor.stockPlus.entity.Produto;
 import com.unifor.stockPlus.entity.Usuario;
 import com.unifor.stockPlus.exceptions.ResourceNotFoundException;
-import com.unifor.stockPlus.repository.EstoqueRepository;
 import com.unifor.stockPlus.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
 public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
-    private final EstoqueRepository estoqueRepository;
 
-    public ProdutoService(ProdutoRepository produtoRepo, EstoqueRepository estoqueRepo) {
+    public ProdutoService(ProdutoRepository produtoRepo) {
         this.produtoRepository = produtoRepo;
-        this.estoqueRepository = estoqueRepo;
     }
 
+    // Criar produto (sem estoque)
     public ProdutoDTO create(ProdutoDTO dto, Usuario usuarioCriador) {
-        Estoque estoque = estoqueRepository.findById(dto.getEstoqueId())
-                .orElseThrow(() -> new ResourceNotFoundException("Estoque não encontrado"));
 
-        Produto produto = dto.toEntity(estoque);
+        Produto produto = dto.toEntity();
         produto.setUsuario(usuarioCriador);
+
         produtoRepository.save(produto);
+
         return ProdutoDTO.fromEntity(produto);
     }
 
-    private Produto converterParaEntidade(ProdutoDTO dto, Usuario usuario) {
-        Produto produto = new Produto();
-
-        produto.setNome(dto.getNome());
-        produto.setDescricao(dto.getDescricao());
-        produto.setPrecoUnitario(dto.getPrecoUnitario());
-        produto.setQuantidade(dto.getQuantidade());
-        produto.setUsuario(usuario);
-
-        return produto;
-    }
-
-    public List<ProdutoDTO> getByEstoque(Long estoqueId) {
-        List<Produto> produtos = produtoRepository.findByEstoqueId(estoqueId);
-
-        if (produtos.isEmpty()) {
-            throw new ResourceNotFoundException("Nenhum produto encontrado para este estoque.");
-        }
-
-        return produtos.stream()
-                .map(ProdutoDTO::fromEntity)
-                .toList();
-    }
-
+    // Buscar por ID
     public ProdutoDTO getById(Long id) {
         Produto produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
-
         return ProdutoDTO.fromEntity(produto);
     }
 
+    // Listar todos
     public List<ProdutoDTO> getAll() {
-        return produtoRepository.findAll().stream()
+        return produtoRepository.findAll()
+                .stream()
                 .map(ProdutoDTO::fromEntity)
                 .toList();
     }
 
+    // Atualizar produto
     public ProdutoDTO update(Long id, ProdutoDTO dto) {
         Produto produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
 
-        Estoque estoque = estoqueRepository.findById(dto.getEstoqueId())
-                .orElseThrow(() -> new ResourceNotFoundException("Estoque não encontrado"));
-
         produto.setNome(dto.getNome());
         produto.setDescricao(dto.getDescricao());
-        produto.setFornecedor(dto.getFornecedor()); // NOVO
-        produto.setMarca(dto.getMarca()); // NOVO
-        produto.setQuantidade(dto.getQuantidade());
+        produto.setFornecedor(dto.getFornecedor());
+        produto.setMarca(dto.getMarca());
         produto.setPrecoUnitario(dto.getPrecoUnitario());
-        produto.setEstoque(estoque);
 
         produtoRepository.save(produto);
 
         return ProdutoDTO.fromEntity(produto);
     }
 
+    // Deletar
     public void delete(Long id) {
-        if (!produtoRepository.existsById(id))
+        if (!produtoRepository.existsById(id)) {
             throw new ResourceNotFoundException("Produto não encontrado");
+        }
 
         produtoRepository.deleteById(id);
     }
 
-    public ProdutoDTO addQuantity(Long id, int quantity) {
-        Produto p = produtoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
-
-        p.setQuantidade(p.getQuantidade() + quantity);
-        produtoRepository.save(p);
-
-        return ProdutoDTO.fromEntity(p);
-    }
-
-    public ProdutoDTO removeQuantity(Long id, int quantity) {
-        Produto p = produtoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
-
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("A quantidade removida deve ser maior que zero.");
-        }
-
-        if (p.getQuantidade() < quantity) {
-            throw new IllegalArgumentException("Não há quantidade suficiente no estoque para remover.");
-        }
-
-        p.setQuantidade(p.getQuantidade() - quantity);
-        produtoRepository.save(p);
-
-        return ProdutoDTO.fromEntity(p);
-    }
-
-    public Double calcularValorTotalEstoque() {
-        return produtoRepository.findAll()
-                .stream()
-                .mapToDouble(p -> p.getPrecoUnitario() * p.getQuantidade())
-                .sum();
-    }
-
-    public List<ProdutoDTO> listarPorEstoque(Long estoqueId) {
-        List<Produto> produtos = produtoRepository.findByEstoqueId(estoqueId);
-        return produtos.stream()
-                .map(ProdutoDTO::fromEntity)
-                .toList();
-    }
-
+    // Listar produtos por usuário
     public List<ProdutoDTO> listarPorUsuario(Long usuarioId) {
         return produtoRepository.findByUsuarioId(usuarioId)
                 .stream()

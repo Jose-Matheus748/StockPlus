@@ -1,32 +1,13 @@
-/**
- * Modelos TypeScript para as entidades da aplicação
- */
-
 export enum TipoUsuario {
   ADMIN = 'ADMIN',
   FUNCIONARIO = 'FUNCIONARIO',
 }
-
-export interface Usuario {
-  id?: number;
-  nome: string;
-  email: string;
-  cpfOuCnpj: string;
-  tipo: TipoUsuario;
-  senha?: string;
-}
-
-export interface LoginRequest {
-  email: string;
-  senha: string;
-}
-
 export interface Estoque {
   id?: number;
   nome: string;
   descricao?: string;
   usuarioId?: number;
-  produtos?: Produto[];
+  produtos?: ProdutoEstoque[];
 }
 
 export interface Produto {
@@ -35,19 +16,41 @@ export interface Produto {
   descricao?: string;
   fornecedor: string;
   marca: string;
-  quantidade: number;
   precoUnitario: number;
-  estoqueId?: number;
-  usuarioId?: number;
+  usuarioId: number | null;
 }
 
+
+export interface ProdutoEstoque {
+  id?: number | null;
+  quantidade: number;
+
+  produto: {
+    id?: number | null;
+    nome: string;
+    fornecedor: string;
+    marca: string;
+    precoUnitario: number;
+    descricao?: string;
+    usuarioId?: number | null;
+  };
+}
 
 export interface ValorTotalEstoque {
   valorTotal: number;
   quantidadeTotal: number;
 }
 
-export interface AuthResponse {
-  usuario: Usuario;
-  token?: string;
+export interface Usuario {
+  id?: number;
+  nome: string;
+  email: string;
+  senha?: string;
+  cpfOuCnpj: string;
+  tipo: TipoUsuario;
+}
+
+export interface LoginRequest {
+  email: string;
+  senha: string;
 }

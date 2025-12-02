@@ -75,43 +75,25 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let produto of produtos">
-              <td>{{ produto.nome }}</td>
-              <td>{{ produto.fornecedor }}</td>
-              <td>{{ produto.marca }}</td>
-              <td class="quantity">{{ produto.quantidade }}</td>
-              <td>R$ {{ produto.precoUnitario | number: '1.2-2' }}</td>
-              <td class="description">{{ produto.descricao || '-' }}</td>
-              <td class="total">R$ {{ calcularValorTotal(produto) | number: '1.2-2' }}</td>
+            <tr *ngFor="let item of produtos">
+              <td>{{ item.produto.nome }}</td>
+              <td>{{ item.produto.fornecedor }}</td>
+              <td>{{ item.produto.marca }}</td>
+              <td class="quantity">{{ item.quantidade }}</td>
+              <td>R$ {{ item.produto.precoUnitario | number: '1.2-2' }}</td>
+              <td class="description">{{ item.produto.descricao || '-' }}</td>
+              <td class="total">
+                R$ {{ item.quantidade * item.produto.precoUnitario | number: '1.2-2' }}
+              </td>
+
               <td class="actions">
-                <button
-                  class="btn-action btn-add"
-                  (click)="adicionarQuantidade(produto)"
-                  title="Adicionar quantidade"
-                >
-                  ➕
-                </button>
-                <button
-                  class="btn-action btn-remove"
-                  (click)="removerQuantidade(produto)"
-                  title="Remover quantidade"
-                >
-                  ➖
-                </button>
-                <button
-                  class="btn-action btn-edit"
-                  (click)="editarProduto(produto)"
-                  title="Editar"
-                >
-                  ✏️
-                </button>
-                <button
-                  class="btn-action btn-delete"
-                  (click)="deletarProduto(produto.id)"
-                  title="Deletar"
-                >
-                  🗑️
-                </button>
+                <button class="btn-action btn-add" (click)="adicionarQuantidade(item)">➕</button>
+
+                <button class="btn-action btn-remove" (click)="removerQuantidade(item)">➖</button>
+
+                <button class="btn-action btn-edit" (click)="editarProduto(item)">✏️</button>
+
+                <button class="btn-action btn-delete" (click)="deletarProdutoEstoque(item.id!)">🗑️</button>
               </td>
             </tr>
           </tbody>
@@ -137,82 +119,69 @@
 
         <form class="modal-form">
           <div class="form-group">
-            <label for="nome">Nome *</label>
+            <label for="nome">Nome</label>
+            <!-- NOME -->
             <input
               type="text"
               id="nome"
               class="form-control"
-              [(ngModel)]="formData.nome"
+              [(ngModel)]="formData.produto.nome"
               name="nome"
               placeholder="Nome do produto"
             />
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="fornecedor">Fornecedor *</label>
-              <input
-                type="text"
-                id="fornecedor"
-                class="form-control"
-                [(ngModel)]="formData.fornecedor"
-                name="fornecedor"
-                placeholder="Fornecedor"
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="marca">Marca *</label>
-              <input
-                type="text"
-                id="marca"
-                class="form-control"
-                [(ngModel)]="formData.marca"
-                name="marca"
-                placeholder="Marca"
-              />
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="quantidade">Quantidade</label>
-              <input
-                type="number"
-                id="quantidade"
-                class="form-control"
-                [(ngModel)]="formData.quantidade"
-                name="quantidade"
-                placeholder="0"
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="precoUnitario">Preço Unitário</label>
-              <input
-                type="number"
-                id="precoUnitario"
-                class="form-control"
-                [(ngModel)]="formData.precoUnitario"
-                name="precoUnitario"
-                placeholder="0.00"
-                step="0.01"
-              />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="descricao">Descrição</label>
+            <label for="nome">Fornecedor</label>
+            <!-- FORNECEDOR -->
+            <input
+              type="text"
+              id="fornecedor"
+              class="form-control"
+              [(ngModel)]="formData.produto.fornecedor"
+              name="fornecedor"
+              placeholder="Fornecedor"
+            />
+            <label for="nome">Marca</label>
+            <!-- MARCA -->
+            <input
+              type="text"
+              id="marca"
+              class="form-control"
+              [(ngModel)]="formData.produto.marca"
+              name="marca"
+              placeholder="Marca"
+            />
+            <label for="nome">Preço</label>
+            <!-- PREÇO UNITÁRIO -->
+            <input
+              type="number"
+              id="precoUnitario"
+              class="form-control"
+              [(ngModel)]="formData.produto.precoUnitario"
+              name="precoUnitario"
+              placeholder="0.00"
+              step="0.01"
+            />
+            <label for="nome">Descrição</label>
+            <!-- DESCRIÇÃO -->
             <textarea
               id="descricao"
               class="form-control"
-              [(ngModel)]="formData.descricao"
+              [(ngModel)]="formData.produto.descricao"
               name="descricao"
               placeholder="Descrição do produto"
               rows="3"
             ></textarea>
-          </div>
 
+            <label for="quantidade">Quantidade</label>
+            <input
+              type="number"
+              id="quantidade"
+              class="form-control"
+              [(ngModel)]="formData.quantidade"
+              name="quantidade"
+              placeholder="0"
+              min="0"
+            />
+          </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="fecharFormulario()">
               Cancelar
