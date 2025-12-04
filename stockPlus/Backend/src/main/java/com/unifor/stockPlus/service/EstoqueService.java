@@ -14,7 +14,6 @@ import java.util.List;
 
 @Service
 public class EstoqueService {
-
     private final EstoqueRepository estoqueRepository;
     private final ProdutoRepository produtoRepository;
 

@@ -1,14 +1,9 @@
-/**
- * Estilos para a página de Login
- * Design minimalista com cores claras (bege, amarelo claro, branco)
- */
-
 .login-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #fef9f3 0%, #fffbf0 100%);
+  background: linear-gradient(135deg, #aea99a 0%, #aea99a 100%);
   padding: 20px;
 }
 
@@ -142,7 +137,6 @@
   }
 }
 
-/* Responsividade */
 @media (max-width: 480px) {
   .login-card {
     padding: 30px 20px;

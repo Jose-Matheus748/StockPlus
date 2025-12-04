@@ -9,6 +9,8 @@ import { EstoquesComponent } from './pages/estoques/estoques.component';
 import { EstoqueComponent } from './pages/estoque/estoque.component';
 import { AuthGuard } from './guards/auth.guard';
 import { ProdutosComponent } from './pages/produtos/produtos.component';
+import { ProtocolosComponent } from './pages/protocolos/protocolos.component';
+import { ProtocoloComponent } from './pages/protocolo/protocolo.component';
 
 export const routes: Routes = [
   {
@@ -37,6 +39,16 @@ export const routes: Routes = [
   {
   path: 'produtos',
   component: ProdutosComponent,
+  },
+  {
+    path: 'protocolos',
+    component: ProtocolosComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'protocolo/:id',
+    component: ProtocoloComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: '**',

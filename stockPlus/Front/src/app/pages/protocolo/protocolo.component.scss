@@ -1,0 +1,168 @@
+.protocolo-container {
+  max-width: 900px;
+  margin: 30px auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 3px 16px rgba(0, 0, 0, 0.07);
+  font-family: "Inter", sans-serif;
+}
+
+.header-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+  }
+
+  .preco-field {
+    display: flex;
+    flex-direction: column;
+    label {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    input {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      width: 160px;
+    }
+  }
+}
+
+h2 {
+  margin-top: 30px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin-top: 15px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+
+  th {
+    background: #f3f3f3;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .acoes {
+    text-align: center;
+    width: 120px;
+  }
+
+  .empty {
+    text-align: center;
+    color: #777;
+    padding: 25px 0;
+  }
+}
+
+.total-box {
+  margin-top: 20px;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: right;
+  background: #fafafa;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.add-item-section {
+  margin-top: 25px;
+  display: flex;
+  gap: 15px;
+
+  select,
+  input {
+    padding: 10px;
+    border: 1px solid #bbb;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+
+  .btn-add {
+    padding: 10px 18px;
+    background: #2d6cdf;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .btn-add:hover {
+    background: #1f4baa;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+
+  .btn-save {
+    flex: 1;
+    background: #c9a06b;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .btn-delete {
+    flex: 1;
+    background: #d9534f;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .btn-delete:hover {
+    background: #b93632;
+  }
+
+  .btn-save:hover {
+    background: #b38858;
+  }
+}
+
+.btn-remove {
+  padding: 6px 12px;
+  background: #d9534f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-remove:hover {
+  background: #b42e2a;
+}

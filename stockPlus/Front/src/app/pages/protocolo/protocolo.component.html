@@ -1,0 +1,55 @@
+<app-layout>
+  <div class="protocolo-container">
+    <div class="header-section">
+      <h1>Protocolo: {{ protocolo.nome || 'Novo protocolo' }}</h1>
+      <div class="preco-field">
+        <label>Preço cobrado ao cliente: {{protocolo.preco}}</label>
+      </div>
+    </div>
+
+    <h2>Itens do Protocolo</h2>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Qtd</th>
+            <th>Valor</th>
+            <th class="acoes">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of protocolo.itens; let i = index;">
+            <td>{{ item.produtoNome }}</td>
+            <td>{{ item.quantidade }}</td>
+            <td>R$ {{ item.valorItem | number:'1.2-2' }}</td>
+            <td class="acoes">
+              <button class="btn-remove" (click)="removerItem(i)">Remover</button>
+            </td>
+          </tr>
+          <tr *ngIf="protocolo.itens.length === 0">
+            <td colspan="4" class="empty">Nenhum item adicionado.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="total-box">
+      Total: <strong>R$ {{ total | number:'1.2-2' }}</strong>
+    </div>
+
+    <div class="add-item-section">
+      <select [(ngModel)]="novoItem.produtoId">
+        <option [ngValue]="null">Selecione um produto</option>
+        <option *ngFor="let p of produtos" [ngValue]="p.id ?? 0">{{ p.nome }}</option>
+      </select>
+      <input type="number" [(ngModel)]="novoItem.quantidade" min="1" />
+      <button class="btn-add" (click)="adicionarItem()">Adicionar</button>
+    </div>
+
+    <div class="actions">
+      <button class="btn-delete" (click)="excluirProtocolo()">Excluir Protocolo</button>
+    </div>
+  </div>
+</app-layout>

@@ -15,7 +15,6 @@ public class UsuarioDTO {
     private String cpfOuCnpj;
     private TipoUsuario tipo;
 
-    // ---------- Entity -> DTO ----------
     public static UsuarioDTO fromEntity(Usuario usuario) {
         if (usuario == null) return null;
 
@@ -26,13 +25,11 @@ public class UsuarioDTO {
         dto.setCpfOuCnpj(usuario.getCpfOuCnpj());
         dto.setTipo(usuario.getTipo());
 
-        // Opcional: NÃO retornar senha por segurança.
         dto.setSenha(null);
 
         return dto;
     }
 
-    // ---------- DTO -> Entity ----------
     public Usuario toEntity() {
         Usuario usuario = new Usuario();
         usuario.setId(this.id);

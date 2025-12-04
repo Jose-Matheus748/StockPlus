@@ -23,7 +23,6 @@ public class EstoqueController {
     @Autowired
     private UsuarioService usuarioService;
 
-    // Criar estoque
     @PostMapping
     public ResponseEntity<EstoqueDTO> create(@RequestBody EstoqueDTO dto) {
         Usuario usuario = usuarioService.getEntityById(dto.getUsuarioId());
@@ -57,9 +56,6 @@ public class EstoqueController {
         return ResponseEntity.ok(atualizado);
     }
 
-    // ------------------------------------------------------------
-    // DELETE CORRIGIDO
-    // ------------------------------------------------------------
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable Long id,

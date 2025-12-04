@@ -68,7 +68,6 @@ public class UsuarioService {
 
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
 
-        // Criar estoque padrão após salvar usuário
         estoqueService.criarEstoquePadrao(usuarioSalvo);
 
         return UsuarioDTO.fromEntity(usuarioSalvo);

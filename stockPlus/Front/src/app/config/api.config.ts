@@ -1,19 +1,13 @@
-/**
- * Configuração da API do backend Spring Boot
- */
-
 export const API_CONFIG = {
   baseURL: 'http://localhost:8080',
   timeout: 30000,
 };
 
 export const API_ENDPOINTS = {
-  // Autenticação
   auth: {
     login: '/auth/login',
   },
 
-  // Usuários
   usuarios: {
     create: '/usuarios',
     getAll: '/usuarios',
@@ -22,7 +16,6 @@ export const API_ENDPOINTS = {
     delete: (id: number) => `/usuarios/${id}`,
   },
 
-  // Estoques
   estoques: {
     create: '/estoques',
     getAll: '/estoques',
@@ -32,11 +25,9 @@ export const API_ENDPOINTS = {
     listarProdutos: (id: number) => `/estoques/${id}/produtos`,
     calcularValorTotal: (id: number) => `/estoques/${id}/valor-total`,
 
-    // 🔥 ROTA QUE FALTAVA para listar apenas os estoques do usuário autenticado
     meusEstoques: '/estoques/meus-estoques',
   },
 
-  // Produtos
   produtos: {
     create: '/produtos',
     getAll: '/produtos',
@@ -48,4 +39,18 @@ export const API_ENDPOINTS = {
     getValorTotal: '/produtos/valor-total',
     listarPorUsuario: (usuarioId: number) => `/produtos/meus-produtos?usuarioId=${usuarioId}`,
   },
+
+  protocolos: {
+    getAll: '/protocolos',
+    create: '/protocolos',
+    getById: (id: number) => `/protocolos/${id}`,
+    getByUsuario: (usuarioId: number) => `/protocolos/usuario/${usuarioId}`,
+    update: (id: number) => `/protocolos/${id}`,
+    delete: (id: number) => `/protocolos/${id}`,
+
+    addItem: (protocoloId: number) => `/protocolos/${protocoloId}/itens`,
+    removeItem: (itemId: number) => `/protocolos/itens/${itemId}`,
+
+    getItens: (protocoloId: number) => `/protocolos/${protocoloId}/itens`,
+  }
 };

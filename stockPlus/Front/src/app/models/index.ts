@@ -51,3 +51,21 @@ export interface AuthResponse {
   usuario: Usuario;
   token?: string;
 }
+
+export interface Protocolo {
+  id?: number;
+  nome: string;
+  preco: number;
+  valorTotal?: number;
+  usuarioId?: number;
+  itens: ItemProtocolo[];
+}
+export interface ItemProtocolo {
+  id?: number;
+  produtoId: number;
+  produtoNome?: string;
+  quantidade: number;
+  valorItem?: number;
+}
+
+

@@ -23,7 +23,7 @@
         <i class="icon">🏷️</i>
         <span>Produtos</span>
       </a>
-      <a href="#" class="nav-item">
+      <a href="/protocolos" class="nav-item">
         <i class="icon">📊</i>
         <span>Protocolos</span>
       </a>
@@ -37,23 +37,14 @@
           <p class="user-email">{{ usuario?.email }}</p>
         </div>
       </div>
-      <button (click)="handleLogout()" class="btn-logout">
-        Sair
-      </button>
+      <button (click)="handleLogout()" class="btn-logout">Sair</button>
     </div>
   </aside>
 
-  <!-- Main Content -->
   <main class="main-content">
     <header class="top-bar">
       <div class="top-bar-left">
-        <button
-          class="menu-toggle"
-          (click)="toggleSidebar()"
-          aria-label="Toggle menu"
-        >
-          ☰
-        </button>
+        <button class="menu-toggle" (click)="toggleSidebar()" aria-label="Toggle menu">☰</button>
         <h1 class="page-title">Sistema de Estoque</h1>
       </div>
       <div class="top-bar-right">

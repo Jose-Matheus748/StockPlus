@@ -24,5 +24,5 @@ public class Usuario {
     private String senha;
 
     @Enumerated(EnumType.STRING)
-    private TipoUsuario tipo; // ADMIN, FUNCIONARIO etc.
+    private TipoUsuario tipo;
 }

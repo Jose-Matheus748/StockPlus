@@ -5,7 +5,6 @@
     </button>
   </div>
   <div class="estoque-container">
-    <!-- Cards de Resumo -->
     <div class="resumo-cards">
       <div class="card">
         <div class="card-icon">💰</div>
@@ -40,7 +39,6 @@
       </div>
     </div>
 
-    <!-- Seção de Produtos -->
     <div class="produtos-section">
       <div class="section-header">
         <h2>Meus Produtos</h2>
@@ -49,17 +47,14 @@
         </button>
       </div>
 
-      <!-- Mensagem de Carregamento -->
       <div *ngIf="isLoading" class="loading">
         <p>Carregando produtos...</p>
       </div>
 
-      <!-- Mensagem de Erro -->
       <div *ngIf="erro && !isLoading" class="alert alert-danger">
         {{ erro }}
       </div>
 
-      <!-- Tabela de Produtos -->
       <div *ngIf="!isLoading && produtos.length > 0" class="table-responsive">
         <table class="table">
           <thead>
@@ -84,41 +79,16 @@
               <td class="description">{{ produto.descricao || '-' }}</td>
               <td class="total">R$ {{ calcularValorTotal(produto) | number: '1.2-2' }}</td>
               <td class="actions">
-                <button
-                  class="btn-action btn-add"
-                  (click)="adicionarQuantidade(produto)"
-                  title="Adicionar quantidade"
-                >
-                  ➕
-                </button>
-                <button
-                  class="btn-action btn-remove"
-                  (click)="removerQuantidade(produto)"
-                  title="Remover quantidade"
-                >
-                  ➖
-                </button>
-                <button
-                  class="btn-action btn-edit"
-                  (click)="editarProduto(produto)"
-                  title="Editar"
-                >
-                  ✏️
-                </button>
-                <button
-                  class="btn-action btn-delete"
-                  (click)="deletarProduto(produto.id)"
-                  title="Deletar"
-                >
-                  🗑️
-                </button>
+                <button class="btn-action btn-add" (click)="adicionarQuantidade(produto)" title="Adicionar quantidade">➕</button>
+                  <button class="btn-action btn-remove" (click)="removerQuantidade(produto)" title="Remover quantidade">➖</button>
+                <button class="btn-action btn-edit" (click)="editarProduto(produto)" title="Editar">✏️</button>
+                <button class="btn-action btn-delete" (click)="deletarProduto(produto.id)" title="Deletar">🗑️</button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Mensagem quando não há produtos -->
       <div *ngIf="!isLoading && produtos.length === 0" class="empty-state">
         <p>Nenhum produto cadastrado ainda.</p>
         <button class="btn btn-primary" (click)="abrirFormulario()">
@@ -127,7 +97,6 @@
       </div>
     </div>
 
-    <!-- Modal de Formulário -->
     <div *ngIf="showFormModal" class="modal-overlay" (click)="fecharFormulario()">
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">

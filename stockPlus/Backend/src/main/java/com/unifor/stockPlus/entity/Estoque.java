@@ -14,8 +14,8 @@ public class Estoque {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nome;       // Ex: "Estoque Principal"
-    private String descricao;  // opcional
+    private String nome;
+    private String descricao;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)

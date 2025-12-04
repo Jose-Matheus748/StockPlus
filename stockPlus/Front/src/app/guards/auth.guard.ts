@@ -1,8 +1,3 @@
-/**
- * Guard de Autenticação
- * Protege rotas que requerem autenticação
- */
-
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -23,8 +18,6 @@ export class AuthGuard implements CanActivate {
     if (this.authService.isAuthenticated()) {
       return true;
     }
-
-    // Redirecionar para login se não autenticado
     this.router.navigate(['/login']);
     return false;
   }

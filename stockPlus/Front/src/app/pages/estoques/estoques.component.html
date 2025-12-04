@@ -1,6 +1,5 @@
 <app-layout>
   <div class="estoques-container">
-    <!-- Header -->
     <div class="estoques-header">
       <h1>Meus Estoques</h1>
       <button class="btn btn-primary" (click)="abrirFormulario()">
@@ -8,24 +7,19 @@
       </button>
     </div>
 
-    <!-- Mensagem de Carregamento -->
     <div *ngIf="isLoading" class="loading">
       <p>Carregando estoques...</p>
     </div>
 
-    <!-- Mensagem de Erro -->
     <div *ngIf="erro && !isLoading" class="alert alert-danger">
       {{ erro }}
     </div>
 
-    <!-- Grid de Estoques -->
     <div *ngIf="!isLoading && estoques.length > 0" class="estoques-grid">
       <div *ngFor="let estoque of estoques" class="estoque-card">
         <div class="estoque-header-card">
           <h3>{{ estoque.nome }}</h3>
-          <button class="btn-delete" (click)="deletarEstoque(estoque)" title="Deletar estoque">
-            🗑️
-          </button>
+          <button class="btn-delete" (click)="deletarEstoque(estoque)" title="Deletar estoque">🗑️</button>
         </div>
 
         <p class="estoque-descricao">{{ estoque.descricao || 'Sem descrição' }}</p>
@@ -36,16 +30,10 @@
           </span>
         </div>
 
-        <button
-          class="btn btn-primary w-100 mt-3"
-          (click)="selecionarEstoque(estoque)"
-        >
-          Acessar Estoque
-        </button>
+        <button class="btn btn-primary w-100 mt-3" (click)="selecionarEstoque(estoque)">Acessar Estoque</button>
       </div>
     </div>
 
-    <!-- Mensagem quando não há estoques -->
     <div *ngIf="!isLoading && estoques.length === 0" class="empty-state">
       <p>Você ainda não possui estoques.</p>
       <button class="btn btn-primary" (click)="abrirFormulario()">
@@ -53,7 +41,6 @@
       </button>
     </div>
 
-    <!-- Modal para Criar Estoque -->
     <div *ngIf="showFormModal" class="modal-overlay" (click)="fecharFormulario()">
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
@@ -73,7 +60,6 @@
               placeholder="Ex: Estoque Principal"
             />
           </div>
-
           <div class="form-group">
             <label for="descricao">Descrição</label>
             <textarea
@@ -85,7 +71,6 @@
               rows="3"
             ></textarea>
           </div>
-
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="fecharFormulario()">
               Cancelar

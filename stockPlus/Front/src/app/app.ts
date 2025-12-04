@@ -1,7 +1,3 @@
-/**
- * Componente Raíz da Aplicação Angular
- */
-
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
@@ -13,5 +9,5 @@ import { RouterOutlet } from '@angular/router';
   styleUrls: ['./app.scss'],
 })
 export class App {
-  title = 'Estoque Clínica';
+  title = 'Stock Plus';
 }
