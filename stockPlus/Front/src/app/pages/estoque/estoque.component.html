@@ -1,4 +1,9 @@
 <app-layout>
+  <app-alerta
+    [mensagem]="alertMensagem"
+    [tipo]="alertTipo"
+    [visivel]="alertVisivel">
+  </app-alerta>
   <div class="back-button-container">
     <button class="btn-back" (click)="voltarEstoques()">
       ← Voltar para Estoques

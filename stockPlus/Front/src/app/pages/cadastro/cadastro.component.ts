@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { TipoUsuario, Usuario } from '../../models';
+import { AlertaComponent } from '../../components/alerts/alerta.component';
 
 @Component({
   selector: 'app-cadastro',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, AlertaComponent],
   templateUrl: './cadastro.component.html',
   styleUrls: ['./cadastro.component.scss'],
 })
@@ -92,5 +93,19 @@ export class CadastroComponent implements OnInit {
         this.isLoading = false;
       },
     });
+  }
+
+  alertMensagem = '';
+  alertTipo: 'erro' | 'sucesso' | 'info' = 'info';
+  alertVisivel = false;
+
+  mostrarAlerta(msg: string, tipo: 'erro' | 'sucesso' | 'info' = 'info') {
+    this.alertMensagem = msg;
+    this.alertTipo = tipo;
+    this.alertVisivel = true;
+
+    setTimeout(() => {
+      this.alertVisivel = false;
+    }, 3000);
   }
 }

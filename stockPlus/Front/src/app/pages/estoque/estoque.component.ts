@@ -6,11 +6,12 @@ import { ProdutoService } from '../../services/produto.service';
 import { Produto } from '../../models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { AlertaComponent } from '../../components/alerts/alerta.component';
 
 @Component({
   selector: 'app-estoque',
   standalone: true,
-  imports: [CommonModule, FormsModule, LayoutComponent],
+  imports: [CommonModule, FormsModule, LayoutComponent, AlertaComponent],
   templateUrl: './estoque.component.html',
   styleUrls: ['./estoque.component.scss'],
 })
@@ -36,6 +37,10 @@ export class EstoqueComponent implements OnInit {
   quantidadeTotalItens = 0;
   totalProdutos = 0;
   precoMedioUnitario = 0;
+
+  alertMensagem = '';
+  alertTipo: 'erro' | 'sucesso' | 'info' = 'info';
+  alertVisivel = false;
 
   estoqueId!: number;
 
@@ -116,14 +121,14 @@ export class EstoqueComponent implements OnInit {
 
   salvarProduto(): void {
     if (!this.formData.nome || !this.formData.fornecedor || !this.formData.marca) {
-      alert('Por favor, preencha todos os campos obrigatórios');
+      this.mostrarAlerta("Por favor, preencha todos os campos obrigatórios", "erro");
       return;
     }
 
     const usuarioId = this.authService.getUsuarioId();
 
     if (!usuarioId) {
-      alert('Usuário não autenticado. Faça login novamente.');
+      this.mostrarAlerta("Usuário não autenticado. Faça login novamente.", "erro");
       return;
     }
 
@@ -133,10 +138,10 @@ export class EstoqueComponent implements OnInit {
         next: () => {
           this.carregarProdutos();
           this.fecharFormulario();
-          alert('Produto atualizado com sucesso!');
+          this.mostrarAlerta("Produto atualizado com sucesso", "sucesso");
         },
         error: (error) => {
-          alert('Erro ao atualizar produto: ' + (error.error?.message || 'Erro desconhecido'));
+          this.mostrarAlerta("Erro ao atualizar produto: " + (error.error?.message || 'Erro desconhecido'), "erro");
         },
       });
 
@@ -148,10 +153,10 @@ export class EstoqueComponent implements OnInit {
         next: () => {
           this.carregarProdutos();
           this.fecharFormulario();
-          alert('Produto adicionado com sucesso!');
+          this.mostrarAlerta("Produto adicionado com sucesso!", "sucesso");
         },
         error: (error) => {
-          alert('Erro ao adicionar produto: ' + (error.error?.message || 'Erro desconhecido'));
+          this.mostrarAlerta("Erro ao adicionar produto: " + (error.error?.message || 'Erro desconhecido'), "erro");
         },
       });
     }
@@ -164,10 +169,10 @@ export class EstoqueComponent implements OnInit {
       this.produtoService.delete(id).subscribe({
         next: () => {
           this.carregarProdutos();
-          alert('Produto deletado com sucesso!');
+          this.mostrarAlerta("Produto deletado com sucesso", "sucesso");
         },
         error: (error) => {
-          alert('Erro ao deletar produto: ' + error.error?.message);
+          this.mostrarAlerta("Erro ao deletar produto: " + error.error?.message, "erro");
         },
       });
     }
@@ -180,7 +185,7 @@ export class EstoqueComponent implements OnInit {
       this.produtoService.addQuantidade(produto.id!, Number(quantidade)).subscribe({
         next: () => this.carregarProdutos(),
         error: (error) =>
-          alert('Erro ao adicionar quantidade: ' + error.error?.message),
+          this.mostrarAlerta("Erro ao adicionar quantidade: " + error.error?.message, "erro"),
       });
     }
   }
@@ -192,7 +197,7 @@ export class EstoqueComponent implements OnInit {
       this.produtoService.removeQuantidade(produto.id!, Number(quantidade)).subscribe({
         next: () => this.carregarProdutos(),
         error: (error) =>
-          alert('Erro ao remover quantidade: ' + error.error?.message),
+          this.mostrarAlerta("Erro ao remover quantidade: " + error.error?.message, "erro"),
       });
     }
   }
@@ -203,5 +208,15 @@ export class EstoqueComponent implements OnInit {
 
   voltarEstoques(): void {
     this.router.navigate(['/estoques']);
+  }
+
+  mostrarAlerta(msg: string, tipo: 'erro' | 'sucesso' | 'info' = 'info') {
+    this.alertMensagem = msg;
+    this.alertTipo = tipo;
+    this.alertVisivel = true;
+
+    setTimeout(() => {
+      this.alertVisivel = false;
+    }, 3000);
   }
 }

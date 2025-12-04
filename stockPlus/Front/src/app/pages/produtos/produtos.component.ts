@@ -1,8 +1,3 @@
-/**
- * Componente de Lista de Produtos
- * Exibe todos os produtos criados pelo usuário
- */
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -11,11 +6,12 @@ import { Produto } from '../../models';
 import { AuthService } from '../../services/auth.service';
 import { LayoutComponent } from '../../components/layout/layout.component';
 import { FormsModule } from '@angular/forms';
+import { AlertaComponent } from '../../components/alerts/alerta.component';
 
 @Component({
   selector: 'app-produtos',
   standalone: true,
-  imports: [CommonModule, LayoutComponent, FormsModule],
+  imports: [CommonModule, LayoutComponent, FormsModule, AlertaComponent],
   templateUrl: './produtos.component.html',
   styleUrls: ['./produtos.component.scss'],
 })
@@ -27,6 +23,10 @@ export class ProdutosComponent implements OnInit {
 
   showFormModal: boolean = false;
   isEditMode: boolean = false;
+
+  alertMensagem = '';
+  alertTipo: 'erro' | 'sucesso' | 'info' = 'info';
+  alertVisivel = false;
 
   formData: Produto = {
     id: 0,
@@ -105,7 +105,7 @@ export class ProdutosComponent implements OnInit {
 
   adicionarQuantidade(produto: Produto): void {
     if (!produto || !produto.id){
-      alert('Produto não encontrado.');
+      this.mostrarAlerta("Produto não encontrado", "erro");
       return;
     }
     produto.quantidade++;
@@ -117,7 +117,7 @@ export class ProdutosComponent implements OnInit {
 
   removerQuantidade(produto: Produto): void {
     if (!produto || !produto.id){
-      alert('Produto não encontrado.');
+      this.mostrarAlerta("Produto não encontrado", "erro");
       return;
     }
     if (produto.quantidade > 0) produto.quantidade--;
@@ -134,10 +134,10 @@ export class ProdutosComponent implements OnInit {
       this.produtoService.delete(id).subscribe({
         next: () => {
           this.carregarProdutos();
-          alert('Produto deletado com sucesso!');
+          this.mostrarAlerta("Produto deletado com sucesso", "sucesso");
         },
         error: (error) => {
-          alert('Erro ao deletar produto: ' + error.error?.message);
+          this.mostrarAlerta("Erro ao deletar produto: " + error.error?.message, "erro");
         },
       });
     }
@@ -145,7 +145,7 @@ export class ProdutosComponent implements OnInit {
 
   salvarProduto(): void {
     if (!this.formData.nome || !this.formData.fornecedor || !this.formData.marca) {
-      alert('Preencha todos os campos obrigatórios.');
+      this.mostrarAlerta("Preencha todos os campos obrigatóris", "info");
       return;
     }
 
@@ -155,11 +155,11 @@ export class ProdutosComponent implements OnInit {
         next: () => {
           this.carregarProdutos();
           this.fecharFormulario();
-          alert('Produto atualizado com sucesso!');
+          this.mostrarAlerta("Produto atualizado com sucesso!", "sucesso")
         },
         error: (error) => {
           console.error(error);
-          alert('Erro ao atualizar produto.');
+          this.mostrarAlerta("Erro ao atualizar produto", "erro")
         }
       });
 
@@ -167,7 +167,7 @@ export class ProdutosComponent implements OnInit {
       // Criar novo produto
       const usuarioId = this.authService.getUsuarioId();
       if (!usuarioId) {
-        alert("Erro: usuário não autenticado!");
+        this.mostrarAlerta("Erro: usuário não autenticado!", "erro")
         return;
       }
 
@@ -175,13 +175,23 @@ export class ProdutosComponent implements OnInit {
         next: () => {
           this.carregarProdutos();
           this.fecharFormulario();
-          alert('Produto adicionado com sucesso!');
+          this.mostrarAlerta("Produto adicionado com sucesso!", "sucesso")
         },
         error: (error) => {
           console.error(error);
-          alert('Erro ao adicionar produto.');
+          this.mostrarAlerta("Produto não encontrado", "erro");
         }
       });
     }
+  }
+
+  mostrarAlerta(msg: string, tipo: 'erro' | 'sucesso' | 'info' = 'info') {
+    this.alertMensagem = msg;
+    this.alertTipo = tipo;
+    this.alertVisivel = true;
+
+    setTimeout(() => {
+      this.alertVisivel = false;
+    }, 3000);
   }
 }

@@ -6,11 +6,12 @@ import { LayoutComponent } from '../../components/layout/layout.component';
 import { ProtocoloService } from '../../services/protocolo.service';
 import { AuthService } from '../../services/auth.service';
 import { Protocolo } from '../../models';
+import { AlertaComponent } from '../../components/alerts/alerta.component'
 
 @Component({
   selector: 'app-protocolos',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, LayoutComponent],
+  imports: [CommonModule, FormsModule, RouterModule, LayoutComponent, AlertaComponent],
   templateUrl: './protocolos.component.html',
   styleUrls: ['./protocolos.component.scss']
 })
@@ -21,6 +22,10 @@ export class ProtocolosComponent implements OnInit {
   erro = '';
 
   showFormModal = false;
+
+  alertMensagem = '';
+  alertTipo: 'erro' | 'sucesso' | 'info' = 'info';
+  alertVisivel = false;
 
   novoProtocolo: Protocolo = {
     nome: '',
@@ -79,13 +84,13 @@ export class ProtocolosComponent implements OnInit {
 
   criarProtocolo(): void {
     if (!this.novoProtocolo.nome.trim()) {
-      alert('Digite um nome para o protocolo.');
+      this.mostrarAlerta("Digite um nome para o protocolo.", "info");
       return;
     }
 
     const usuario = this.authService.getCurrentUser();
     if (!usuario?.id) {
-      alert('Usuário não autenticado');
+      this.mostrarAlerta("Usuário não autenticado", "erro");
       return;
     }
 
@@ -99,11 +104,11 @@ export class ProtocolosComponent implements OnInit {
       next: () => {
         this.carregarProtocolos();
         this.fecharFormulario();
-        alert('Protocolo criado com sucesso!');
+        this.mostrarAlerta("Protocolo criado com sucesso!", "sucesso");
       },
       error: err => {
         console.error(err);
-        alert('Erro ao criar protocolo.');
+        this.mostrarAlerta("Erro ao criar protocolo", "erro");
       }
     });
   }
@@ -122,12 +127,22 @@ export class ProtocolosComponent implements OnInit {
     this.protocoloService.deletar(p.id).subscribe({
       next: () => {
         this.carregarProtocolos();
-        alert('Protocolo deletado com sucesso!');
+        this.mostrarAlerta("Protocolo deletado com sucesso", "sucesso");
       },
       error: err => {
         console.error(err);
-        alert('Erro ao deletar protocolo.');
+        this.mostrarAlerta("Erro ao deletar protocolo.", "erro");
       }
     });
+  }
+
+  mostrarAlerta(msg: string, tipo: 'erro' | 'sucesso' | 'info' = 'info') {
+    this.alertMensagem = msg;
+    this.alertTipo = tipo;
+    this.alertVisivel = true;
+
+    setTimeout(() => {
+      this.alertVisivel = false;
+    }, 3000);
   }
 }

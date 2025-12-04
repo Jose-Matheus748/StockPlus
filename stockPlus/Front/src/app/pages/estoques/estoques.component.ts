@@ -1,8 +1,3 @@
-/**
- * Componente de Gerenciamento de Estoques
- * Permite que o usuário visualize, crie e selecione seus estoques
- */
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -11,11 +6,12 @@ import { LayoutComponent } from '../../components/layout/layout.component';
 import { EstoqueService } from '../../services/estoque.service';
 import { Estoque } from '../../models';
 import { AuthService } from '../../services/auth.service';
+import { AlertaComponent } from '../../components/alerts/alerta.component';
 
 @Component({
   selector: 'app-estoques',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, LayoutComponent],
+  imports: [CommonModule, FormsModule, RouterModule, LayoutComponent, AlertaComponent],
   templateUrl: './estoques.component.html',
   styleUrls: ['./estoques.component.scss'],
 })
@@ -28,6 +24,10 @@ export class EstoquesComponent implements OnInit {
     nome: '',
     descricao: '',
   };
+
+  alertMensagem = '';
+  alertTipo: 'erro' | 'sucesso' | 'info' = 'info';
+  alertVisivel = false;
 
   constructor(
     private estoqueService: EstoqueService,
@@ -88,67 +88,75 @@ export class EstoquesComponent implements OnInit {
    * Cria um novo estoque
    */
   criarEstoque(): void {
-    if (!this.novoEstoque.nome.trim()) {
-      alert('Por favor, insira um nome para o estoque');
-      return;
+      if (!this.novoEstoque.nome.trim()) {
+        this.mostrarAlerta("Por favor, insira um nome para o estoque", "info");
+        return;
+      }
+
+      const usuario = this.authService.getCurrentUser();
+
+      if (!usuario || !usuario.id) { this.mostrarAlerta("Usuário não autenticado", "erro"); return; }
+
+      const payload = {
+        nome: this.novoEstoque.nome,
+        descricao: this.novoEstoque.descricao,
+        usuarioId: usuario.id
+      };
+
+      this.estoqueService.create(payload).subscribe({
+        next: () => {
+          this.carregarEstoques();
+          this.fecharFormulario();
+          this.mostrarAlerta("Estoque criado com sucesso", "sucesso");
+        },
+        error: (error) => {
+          this.mostrarAlerta("Erro ao criar estoque: " + error.error?.message);
+        },
+      });
     }
 
-    const usuario = this.authService.getCurrentUser();
+    /**
+     * Seleciona um estoque e navega para a tela de produtos
+     */
+    selecionarEstoque(estoque: Estoque): void {
+      if (estoque.id) {
+        this.router.navigate(['/estoque', estoque.id]);
+      }
+    }
 
-    if (!usuario || !usuario.id) { alert('Usuário não autenticado.'); return; }
+    /**
+     * Deleta um estoque
+     */
+    deletarEstoque(estoque: Estoque): void {
+    if (!estoque.id) return;
 
-    const payload = {
-      nome: this.novoEstoque.nome,
-      descricao: this.novoEstoque.descricao,
-      usuarioId: usuario.id
-    };
+    if (confirm(`Tem certeza que deseja deletar o estoque "${estoque.nome}"? Todos os produtos serão removidos.`)) {
+      const usuario = this.authService.getCurrentUser();
+      if (!usuario || !usuario.id) {
+        this.mostrarAlerta("Usuário não autenticado", "erro");
+        return;
+      }
 
-    this.estoqueService.create(payload).subscribe({
-      next: () => {
-        this.carregarEstoques();
-        this.fecharFormulario();
-        alert('Estoque criado com sucesso!');
-      },
-      error: (error) => {
-        alert('Erro ao criar estoque: ' + error.error?.message);
-      },
-    });
-  }
-
-  /**
-   * Seleciona um estoque e navega para a tela de produtos
-   */
-  selecionarEstoque(estoque: Estoque): void {
-    if (estoque.id) {
-      this.router.navigate(['/estoque', estoque.id]);
+      this.estoqueService.delete(estoque.id, usuario.id).subscribe({
+        next: () => {
+          this.carregarEstoques();
+          this.mostrarAlerta("Estoque deletado com sucesso", "sucesso");
+        },
+        error: (error) => {
+          console.error('Erro ao deletar:', error);
+          this.mostrarAlerta("Erro ao deletar estoque: " + (error.error?.message || 'Erro desconhecido'), "erro");
+        },
+      });
     }
   }
 
-  /**
-   * Deleta um estoque
-   */
-  deletarEstoque(estoque: Estoque): void {
-  if (!estoque.id) return;
+  mostrarAlerta(msg: string, tipo: 'erro' | 'sucesso' | 'info' = 'info') {
+    this.alertMensagem = msg;
+    this.alertTipo = tipo;
+    this.alertVisivel = true;
 
-  if (confirm(`Tem certeza que deseja deletar o estoque "${estoque.nome}"? Todos os produtos serão removidos.`)) {
-
-    const usuario = this.authService.getCurrentUser();
-    if (!usuario || !usuario.id) {
-      alert('Usuário não autenticado.');
-      return;
-    }
-
-    this.estoqueService.delete(estoque.id, usuario.id).subscribe({
-      next: () => {
-        this.carregarEstoques();
-        alert('Estoque deletado com sucesso!');
-      },
-      error: (error) => {
-        console.error('Erro ao deletar:', error);
-        alert('Erro ao deletar estoque: ' + (error.error?.message || 'Erro desconhecido'));
-      },
-    });
+    setTimeout(() => {
+      this.alertVisivel = false;
+    }, 3000);
   }
-}
-
 }

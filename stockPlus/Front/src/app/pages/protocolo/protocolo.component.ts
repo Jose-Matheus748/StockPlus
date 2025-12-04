@@ -2,17 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-
 import { LayoutComponent } from '../../components/layout/layout.component';
 import { ProtocoloService } from '../../services/protocolo.service';
 import { ProdutoService } from '../../services/produto.service';
 import { ItemProtocoloService } from '../../services/item-protocolo.service';
 import { Protocolo, ItemProtocolo, Produto } from '../../models';
+import { AlertaComponent } from '../../components/alerts/alerta.component';
 
 @Component({
   selector: 'app-protocolo-detalhe',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, LayoutComponent],
+  imports: [CommonModule, FormsModule, RouterModule, LayoutComponent, AlertaComponent],
   templateUrl: './protocolo.component.html',
   styleUrls: ['./protocolo.component.scss']
 })
@@ -30,6 +30,10 @@ export class ProtocoloComponent implements OnInit {
   total = 0;
   isLoading = true;
   erro = '';
+
+  alertMensagem = '';
+  alertTipo: 'erro' | 'sucesso' | 'info' = 'info';
+  alertVisivel = false;
 
   novoItem = {
     produtoId: null as number | null,
@@ -101,18 +105,18 @@ export class ProtocoloComponent implements OnInit {
 
   adicionarItem() {
     if (!this.protocolo.id) {
-      alert('Protocolo precisa ser salvo antes de adicionar itens.');
+      this.mostrarAlerta("Protocolo precisa ser salvo antes de adicionar itens.", "erro");
       return;
     }
 
     if (!this.novoItem.produtoId || this.novoItem.quantidade <= 0) {
-      alert('Selecione um produto e informe uma quantidade válida.');
+      this.mostrarAlerta("Selecione um produto e informe uma quantidade válida", "info");
       return;
     }
 
     const produto = this.produtos.find(p => p.id === this.novoItem.produtoId);
     if (!produto) {
-      alert('Produto inválido.');
+      this.mostrarAlerta("Produto inválido.", "erro");
       return;
     }
 
@@ -135,7 +139,7 @@ export class ProtocoloComponent implements OnInit {
       },
       error: err => {
         console.error(err);
-        alert('Erro ao adicionar item.');
+        this.mostrarAlerta("Erro ao adicionar item", "erro");
       }
     });
   }
@@ -151,7 +155,7 @@ export class ProtocoloComponent implements OnInit {
       },
       error: err => {
         console.error(err);
-        alert('Erro ao remover item.');
+        this.mostrarAlerta("Erro ao remover item.", "erro");
       }
     });
   }
@@ -170,13 +174,23 @@ export class ProtocoloComponent implements OnInit {
 
     this.protocoloService.deletar(this.protocolo.id).subscribe({
       next: () => {
-        alert('Protocolo excluído.');
+        this.mostrarAlerta("Protocolo excluído.", "sucesso");
         this.router.navigate(['/protocolos']);
       },
       error: err => {
         console.error(err);
-        alert('Erro ao excluir.');
+        this.mostrarAlerta("Erro ao excluir.", "erro");
       }
     });
+  }
+
+  mostrarAlerta(msg: string, tipo: 'erro' | 'sucesso' | 'info' = 'info') {
+    this.alertMensagem = msg;
+    this.alertTipo = tipo;
+    this.alertVisivel = true;
+
+    setTimeout(() => {
+      this.alertVisivel = false;
+    }, 3000);
   }
 }

@@ -1,4 +1,10 @@
 <app-layout>
+  <app-alerta
+    [mensagem]="alertMensagem"
+    [tipo]="alertTipo"
+    [visivel]="alertVisivel">
+  </app-alerta>
+
   <div class="protocolo-container">
     <div class="header-section">
       <h1>Protocolo: {{ protocolo.nome || 'Novo protocolo' }}</h1>
